@@ -1,4 +1,4 @@
-import { AgentDto, CreateAgentDto } from "@/pages/dto/agent.dto";
+import { AgentDto, CreateAgentDto } from "@/src/dto/agent.dto";
 import db from "./db";
 
 class AgentService {

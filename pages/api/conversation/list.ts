@@ -6,7 +6,7 @@ import {
   withAuth,
   ExtendedNextApiRequest,
 } from "@/utils/api/handler";
-import { conversationService } from "@/pages/service/conversation.service";
+import { conversationService } from "@/src/service/conversation.service";
 
 const handler = async function handler(
   req: ExtendedNextApiRequest,

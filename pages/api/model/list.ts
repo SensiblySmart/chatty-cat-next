@@ -1,5 +1,5 @@
 import type { NextApiResponse } from "next";
-import { ModelDtoSchema } from "@/pages/dto/model.dto";
+import { ModelDtoSchema } from "@/src/dto/model.dto";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import {
   chain,
@@ -8,7 +8,7 @@ import {
   withZod,
   ExtendedNextApiRequest,
 } from "@/utils/api/handler";
-import { modelService } from "@/pages/service/model.service";
+import { modelService } from "@/src/service/model.service";
 
 const handler = async function handler(
   req: ExtendedNextApiRequest,

@@ -1,7 +1,7 @@
 // src/dto/message.dto.ts
 import { z } from "zod";
 
-export const MessageRoleSchema = z.enum(["system", "user", "agent"]);
+export const MessageRoleSchema = z.enum(["system", "user", "assistant"]);
 
 export const MessageContentSchema = z.object({
   text: z.string(),
@@ -31,8 +31,8 @@ export const SendMessageRequestSchema = CreateMessageDtoSchema.omit({
 
 export const GetMessageChunkRequestSchema = z.object({
   conversation_id: z.string(),
-  page: z.number(),
-  limit: z.number(),
+  page: z.string().transform((val) => parseInt(val, 10)),
+  limit: z.string().transform((val) => parseInt(val, 10)),
   before_message_id: z.string().optional(), // 用于获取某条消息之前的消息
 });
 

@@ -1,5 +1,5 @@
 import type { NextApiResponse } from "next";
-import { GetMessageChunkRequestSchema } from "@/pages/dto/message.dto";
+import { GetMessageChunkRequestSchema } from "@/src/dto/message.dto";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import {
   chain,
@@ -8,7 +8,7 @@ import {
   withZod,
   ExtendedNextApiRequest,
 } from "@/utils/api/handler";
-import { messageService } from "@/pages/service/message.service";
+import { messageService } from "@/src/service/message.service";
 import { z } from "zod";
 
 const handler = async function handler(

@@ -1,4 +1,4 @@
-import { ModelDto, CreateModelDto } from "@/pages/dto/model.dto";
+import { ModelDto, CreateModelDto } from "@/src/dto/model.dto";
 import db from "./db";
 
 class ModelService {

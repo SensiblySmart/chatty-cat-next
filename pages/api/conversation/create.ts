@@ -2,7 +2,7 @@ import type { NextApiResponse } from "next";
 import {
   CreateConversationDto,
   CreateConversationDtoSchema,
-} from "@/pages/dto/conversation.dto";
+} from "@/src/dto/conversation.dto";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import {
   chain,
@@ -11,7 +11,7 @@ import {
   withZod,
   ExtendedNextApiRequest,
 } from "@/utils/api/handler";
-import { conversationService } from "@/pages/service/conversation.service";
+import { conversationService } from "@/src/service/conversation.service";
 
 const handler = async function handler(
   req: ExtendedNextApiRequest,

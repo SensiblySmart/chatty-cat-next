@@ -1,7 +1,7 @@
 import {
   ConversationDto,
   CreateConversationDto,
-} from "@/pages/dto/conversation.dto";
+} from "@/src/dto/conversation.dto";
 import db from "./db";
 
 class ConversationService {

@@ -1,4 +1,4 @@
-import { MessageDto, CreateMessageDto } from "@/pages/dto/message.dto";
+import { MessageDto, CreateMessageDto } from "@/src/dto/message.dto";
 import db from "./db";
 
 class MessageService {

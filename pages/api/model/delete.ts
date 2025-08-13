@@ -1,7 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import { chain, withMethods, withAuth } from "@/utils/api/handler";
-import { modelService } from "@/pages/service/model.service";
+import { modelService } from "@/src/service/model.service";
 
 const handler = async function handler(
   req: NextApiRequest,

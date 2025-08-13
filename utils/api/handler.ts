@@ -48,8 +48,8 @@ export const withAuth =
         error: "Unauthorized",
       });
     }
-    req.session = session;
-    return handler(req, res);
+    (req as ExtendedNextApiRequest).session = session;
+    return handler(req as ExtendedNextApiRequest, res);
   };
 
 // 可选：zod 校验（body 或 query）
@@ -74,6 +74,6 @@ export const withZod =
       });
     }
     // 通过后把解析结果挂到 req.validated 上
-    (req as { validated?: unknown }).validated = parsed.data;
-    return handler(req, res);
+    (req as ExtendedNextApiRequest).validated = parsed.data;
+    return handler(req as ExtendedNextApiRequest, res);
   };
