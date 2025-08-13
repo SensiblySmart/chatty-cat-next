@@ -8,11 +8,11 @@ export type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 
 export interface ExtendedNextApiRequest extends NextApiRequest {
   validated?: unknown;
-  session?: Session;
+  session: Session;
 }
 
 type Handler = (
-  req: NextApiRequest,
+  req: ExtendedNextApiRequest,
   res: NextApiResponse
 ) => unknown | Promise<unknown>;
 type Middleware = (handler: Handler) => Handler;
