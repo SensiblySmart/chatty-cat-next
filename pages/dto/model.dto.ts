@@ -5,6 +5,5 @@ export const ModelDtoSchema = z.object({
   provider: z.string(),
   model_name: z.string(),
 });
-
 // 自动推导 TypeScript 类型
 export type ModelDto = z.infer<typeof ModelDtoSchema>;

@@ -42,7 +42,11 @@ export const withAuth =
   async (req: NextApiRequest & { session?: Session }, res: NextApiResponse) => {
     const session = await getServerSession(req, res, authOptions);
     if (!session?.user?.id) {
-      return res.status(401).json({ error: "Unauthorized" });
+      return res.status(401).json({
+        message: "Unauthorized",
+        code: 1,
+        error: "Unauthorized",
+      });
     }
     req.session = session;
     return handler(req, res);
@@ -62,7 +66,12 @@ export const withZod =
     const input = source === "body" ? req.body : req.query;
     const parsed = schema.safeParse(input);
     if (!parsed.success) {
-      return res.status(400).json({ error: parsed.error.format() });
+      console.log(parsed.error);
+      return res.status(400).json({
+        message: "Invalid request",
+        code: 1,
+        error: parsed.error.format(),
+      });
     }
     // 通过后把解析结果挂到 req.validated 上
     (req as { validated?: unknown }).validated = parsed.data;
