@@ -1,5 +1,5 @@
 import type { NextApiResponse } from "next";
-import { ModelDto, ModelDtoSchema } from "@/pages/dto/model.dto";
+import { ModelDto, CreateModelDtoSchema } from "@/pages/dto/model.dto";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import {
   chain,
@@ -40,5 +40,5 @@ const handler = async function handler(
 export default chain(
   withMethods(["POST"]),
   withAuth(authOptions),
-  withZod(ModelDtoSchema, "body")
+  withZod(CreateModelDtoSchema, "body")
 )(handler);

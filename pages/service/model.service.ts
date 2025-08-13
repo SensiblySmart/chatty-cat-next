@@ -49,6 +49,17 @@ class ModelService {
 
     return result as ModelDto[];
   }
+
+  /**
+   * 根据 ID 删除 model 记录
+   */
+  async deleteModel(id: string): Promise<void> {
+    const { error } = await db.getClient().from("models").delete().eq("id", id);
+
+    if (error) {
+      throw new Error(`Failed to delete model: ${error.message}`);
+    }
+  }
 }
 
 export const modelService = ModelService.getInstance();
