@@ -1,11 +1,5 @@
-import { ModelDto } from "@/pages/dto/model.dto";
+import { ModelDto, CreateModelDto } from "@/pages/dto/model.dto";
 import db from "./db";
-
-interface ModelRecord extends ModelDto {
-  created_at: string;
-  updated_at: string;
-  id: string;
-}
 
 class ModelService {
   private static instance: ModelService;
@@ -22,7 +16,7 @@ class ModelService {
   /**
    * 创建新的 model 记录
    */
-  async createModel(data: ModelDto): Promise<ModelRecord> {
+  async createModel(data: CreateModelDto): Promise<ModelDto> {
     const { data: result, error } = await db
       .getClient()
       .from("models")
@@ -36,13 +30,13 @@ class ModelService {
       throw new Error(`Failed to create model: ${error.message}`);
     }
 
-    return result as ModelRecord;
+    return result as ModelDto;
   }
 
   /**
    * 获取所有 model 记录
    */
-  async listAllModels(): Promise<ModelRecord[]> {
+  async listAllModels(): Promise<ModelDto[]> {
     const { data: result, error } = await db
       .getClient()
       .from("models")
@@ -53,7 +47,7 @@ class ModelService {
       throw new Error(`Failed to list models: ${error.message}`);
     }
 
-    return result as ModelRecord[];
+    return result as ModelDto[];
   }
 }
 
