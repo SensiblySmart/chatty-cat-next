@@ -29,5 +29,15 @@ export const SendMessageRequestSchema = CreateMessageDtoSchema.omit({
   role: true,
 });
 
+export const GetMessageChunkRequestSchema = z.object({
+  conversation_id: z.string(),
+  page: z.number(),
+  limit: z.number(),
+  before_message_id: z.string().optional(), // 用于获取某条消息之前的消息
+});
+
 export type MessageDto = z.infer<typeof MessageDtoSchema>;
 export type CreateMessageDto = z.infer<typeof CreateMessageDtoSchema>;
+export type GetMessageChunkRequest = z.infer<
+  typeof GetMessageChunkRequestSchema
+>;
