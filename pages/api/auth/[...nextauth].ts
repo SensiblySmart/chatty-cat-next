@@ -22,6 +22,7 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+  secret: env.NEXTAUTH_SECRET,
   adapter: SupabaseAdapter({
     url: env.SUPABASE_URL,
     secret: env.SUPABASE_SERVICE_ROLE_KEY,
