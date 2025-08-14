@@ -22,6 +22,26 @@ export const authOptions: NextAuthOptions = {
       clientSecret: env.GOOGLE_CLIENT_SECRET,
     }),
   ],
+  cookies: {
+    sessionToken: {
+      name: "chatty-kitty-session-token",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: env.NEXTAUTH_URL.startsWith("https"),
+      },
+    },
+    pkceCodeVerifier: {
+      name: "next-auth.pkce.code_verifier",
+      options: {
+        httpOnly: true,
+        sameSite: "lax",
+        path: "/",
+        secure: env.NEXTAUTH_URL.startsWith("https"),
+      },
+    },
+  },
   secret: env.NEXTAUTH_SECRET,
   adapter: SupabaseAdapter({
     url: env.SUPABASE_URL,

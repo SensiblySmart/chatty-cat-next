@@ -27,7 +27,7 @@ const handler = async function handler(
   const expires = new Date(Date.now() + maxAge * 1000);
 
   // 构建 cookie 字符串
-  let cookieString = `next-auth.session-token=${token}; Path=/; HttpOnly; Max-Age=${maxAge}; Expires=${expires.toUTCString()}`;
+  let cookieString = `chatty-kitty-session-token=${token}; Path=/; HttpOnly; Max-Age=${maxAge}; Expires=${expires.toUTCString()}`;
 
   // 在生产环境中添加 Secure 和 SameSite
   if (env.NEXTAUTH_URL.startsWith("https://")) {
@@ -43,6 +43,8 @@ const handler = async function handler(
   }
 
   res.setHeader("Set-Cookie", cookieString);
+
+  console.log("set-cookie string", cookieString);
 
   const response = {
     message: "success",
