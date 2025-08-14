@@ -10,6 +10,7 @@ const envSchema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string(),
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
+  NODE_ENV: z.enum(["development", "production"]),
 });
 
 let env = {} as z.infer<typeof envSchema>;

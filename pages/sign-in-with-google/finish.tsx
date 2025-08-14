@@ -1,3 +1,4 @@
+import { env } from "@/utils/env";
 import { GetServerSideProps } from "next";
 
 interface MobileFinishProps {
@@ -28,17 +29,19 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     // 1) 生成一次性 code（存在 DB/Redis）
     const cookieHeader = req.headers.cookie || "";
 
-    const res = await fetch(
-      "http://localhost:3000/api/google/session-handoff",
-      {
-        method: "POST",
-        headers: {
-          cookie: cookieHeader, // 让后端识别当前站点会话
-          "Content-Type": "application/json",
-        },
-        cache: "no-store",
-      }
-    );
+    const origin =
+      env.NODE_ENV === "development"
+        ? "http://localhost:3000"
+        : "https://chattykitty.sensiblysmartllc.com";
+
+    const res = await fetch(`${origin}/api/google/session-handoff`, {
+      method: "POST",
+      headers: {
+        cookie: cookieHeader, // 让后端识别当前站点会话
+        "Content-Type": "application/json",
+      },
+      cache: "no-store",
+    });
 
     if (!res.ok) {
       throw new Error(`Failed to get handoff code: ${res.status}`);
