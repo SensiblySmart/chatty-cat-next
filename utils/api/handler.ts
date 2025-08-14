@@ -42,6 +42,7 @@ export const withAuth =
   async (req: NextApiRequest & { session?: Session }, res: NextApiResponse) => {
     const session = await getServerSession(req, res, authOptions);
     if (!session?.user?.id) {
+      console.log("withAuth: cookie", req.cookies);
       return res.status(401).json({
         message: "Unauthorized",
         code: 1,
