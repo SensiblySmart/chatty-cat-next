@@ -29,10 +29,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     // 1) 生成一次性 code（存在 DB/Redis）
     const cookieHeader = req.headers.cookie || "";
 
-    const origin =
-      env.NODE_ENV === "development"
-        ? "http://localhost:3000"
-        : "https://chattykitty.sensiblysmartllc.com";
+    const origin = "https://chattykitty.sensiblysmartllc.com";
 
     const res = await fetch(`${origin}/api/google/session-handoff`, {
       method: "POST",
