@@ -14,7 +14,7 @@ const handler = async function handler(
   const cookie = req.cookies;
 
   console.log("cookie", cookie);
-  const token = cookie["next-auth.session-token"];
+  const token = cookie["__Secure-next-auth.session-token"];
 
   return res.status(200).json({
     message: "success",

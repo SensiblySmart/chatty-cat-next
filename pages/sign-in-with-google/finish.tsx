@@ -26,7 +26,6 @@ export default function MobileFinish({ token }: MobileFinishProps) {
 
 export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   try {
-    // 1) 生成一次性 code（存在 DB/Redis）
     const cookieHeader = req.headers.cookie || "";
 
     const origin = "https://chattykitty.sensiblysmartllc.com";
