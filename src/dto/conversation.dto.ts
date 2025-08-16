@@ -16,6 +16,7 @@ export const CreateConversationDtoSchema = ConversationDtoSchema.omit({
   created_at: true,
   updated_at: true,
   last_message_at: true,
+  title: true,
 });
 
 // 自动推导 TypeScript 类型
