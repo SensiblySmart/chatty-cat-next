@@ -12,7 +12,6 @@ export const ConversationDtoSchema = z.object({
 });
 
 export const CreateConversationDtoSchema = ConversationDtoSchema.omit({
-  id: true,
   created_at: true,
   updated_at: true,
   last_message_at: true,
