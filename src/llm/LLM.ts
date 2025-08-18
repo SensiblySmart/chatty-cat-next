@@ -1,5 +1,4 @@
 import { streamText, ModelMessage, LanguageModel } from "ai";
-import { gpt4o, gpt5, deepseekChat } from "./provider";
 import { ModelDto } from "@/src/dto/model.dto";
 import { createMem0, Mem0Provider } from "@mem0/vercel-ai-provider";
 import { env } from "@/utils/env";
@@ -36,13 +35,14 @@ class LLM {
   }
 
   static async getMessagesWithSystemPrompt(
-    messages: ModelMessage[],
+    messagesWithoutSystemPrompt: ModelMessage[],
     conversation: ConversationDto
   ) {
     const agent = await agentService.getAgentById(conversation.agent_id);
     if (!agent) {
       throw new Error("Agent not found");
     }
+
     const baseMessages: ModelMessage[] = [
       {
         role: "system",
@@ -50,7 +50,7 @@ class LLM {
       },
     ];
 
-    return [...baseMessages, ...messages];
+    return [...baseMessages, ...messagesWithoutSystemPrompt];
   }
 }
 
