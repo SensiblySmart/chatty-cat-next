@@ -47,14 +47,17 @@ const handler = async function handler(
     );
 
     // 4. convert to LLM format messages
-    const llmMessages: ModelMessage[] = historyMessages.map((msg) => ({
-      role: msg.role,
-      content: msg.content.text,
-    }));
+    const messages = await LLM.getMessagesWithSystemPrompt(
+      historyMessages.map((msg) => ({
+        role: msg.role,
+        content: msg.content.text,
+      })),
+      conversation
+    );
 
     // if title is not set, generate title
     if (!conversation.title) {
-      const title = await generateTitle(llmMessages);
+      const title = await generateTitle(messages);
       await conversationService.updateConversationTitle(
         messageData.conversation_id,
         title
@@ -134,7 +137,7 @@ const handler = async function handler(
       }
       const llm = new LLM(model, userId);
       // 11. start streaming
-      const { textStream } = await llm.streamText(llmMessages);
+      const { textStream } = await llm.streamText(messages);
 
       // 12. stream and collect full response
       for await (const chunk of textStream) {
