@@ -41,11 +41,12 @@ class ConversationService {
   /**
    * 获取所有 conversation 记录
    */
-  async listAllConversations(): Promise<ConversationDto[]> {
+  async listAllConversations(userId: string): Promise<ConversationDto[]> {
     const { data: result, error } = await db
       .getClient()
       .from("conversations")
       .select("*")
+      .eq("user_id", userId)
       .limit(100)
       .order("last_message_at", { ascending: false });
 
@@ -59,12 +60,16 @@ class ConversationService {
   /**
    * 根据 ID 获取 conversation
    */
-  async getConversationById(id: string): Promise<ConversationDto | null> {
+  async getConversation(
+    id: string,
+    userId: string
+  ): Promise<ConversationDto | null> {
     const { data: result, error } = await db
       .getClient()
       .from("conversations")
       .select("*")
       .eq("id", id)
+      .eq("user_id", userId)
       .single();
 
     if (error) {
@@ -78,27 +83,12 @@ class ConversationService {
   }
 
   /**
-   * 根据 agent_id 获取 conversations
-   */
-  async getConversationsByAgentId(agentId: string): Promise<ConversationDto[]> {
-    const { data: result, error } = await db
-      .getClient()
-      .from("conversations")
-      .select("*")
-      .eq("agent_id", agentId)
-      .order("last_message_at", { ascending: false });
-
-    if (error) {
-      throw new Error(`Failed to get conversations by agent: ${error.message}`);
-    }
-
-    return result as ConversationDto[];
-  }
-
-  /**
    * 更新 conversation 的最后消息时间
    */
-  async updateLastMessageTime(id: string): Promise<ConversationDto> {
+  async updateLastMessageTime(
+    id: string,
+    userId: string
+  ): Promise<ConversationDto> {
     const { data: result, error } = await db
       .getClient()
       .from("conversations")
@@ -107,6 +97,7 @@ class ConversationService {
         updated_at: new Date().toISOString(),
       })
       .eq("id", id)
+      .eq("user_id", userId)
       .select()
       .single();
 
@@ -119,13 +110,15 @@ class ConversationService {
 
   async updateConversationTitle(
     id: string,
-    title: string
+    title: string,
+    userId: string
   ): Promise<ConversationDto> {
     const { data: result, error } = await db
       .getClient()
       .from("conversations")
       .update({ title })
       .eq("id", id)
+      .eq("user_id", userId)
       .select()
       .single();
 

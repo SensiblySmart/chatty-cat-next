@@ -13,7 +13,10 @@ const handler = async function handler(
   res: NextApiResponse
 ) {
   try {
-    const conversations = await conversationService.listAllConversations();
+    const userId = req.session.user.id;
+    const conversations = await conversationService.listAllConversations(
+      userId
+    );
 
     return res.status(200).json({
       message: "Conversations retrieved successfully",

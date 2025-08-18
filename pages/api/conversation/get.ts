@@ -20,7 +20,9 @@ const handler = async function handler(
 ) {
   try {
     const { id } = req.validated as z.infer<typeof GetConversationSchema>;
-    const conversation = await conversationService.getConversationById(id);
+    const userId = req.session.user.id;
+
+    const conversation = await conversationService.getConversation(id, userId);
 
     return res.status(200).json({
       message: "Conversation retrieved successfully",

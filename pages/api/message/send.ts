@@ -26,8 +26,9 @@ const handler = async function handler(
 
   try {
     // 1. check conversation is exist
-    const conversation = await conversationService.getConversationById(
-      messageData.conversation_id
+    const conversation = await conversationService.getConversation(
+      messageData.conversation_id,
+      userId
     );
 
     if (!conversation) {
@@ -56,7 +57,8 @@ const handler = async function handler(
       const title = await generateTitle(messagesWithoutSystemPrompt);
       await conversationService.updateConversationTitle(
         messageData.conversation_id,
-        title
+        title,
+        userId
       );
     }
 
@@ -96,7 +98,8 @@ const handler = async function handler(
           });
 
           await conversationService.updateLastMessageTime(
-            messageData.conversation_id
+            messageData.conversation_id,
+            userId
           );
 
           console.log("Agent message saved successfully");
