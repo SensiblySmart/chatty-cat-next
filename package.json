@@ -13,6 +13,7 @@
     "@ai-sdk/react": "^2.0.8",
     "@auth/supabase-adapter": "^1.10.0",
     "@dotenvx/dotenvx": "^1.48.4",
+    "@mem0/vercel-ai-provider": "^2.0.1",
     "@supabase/supabase-js": "^2.55.0",
     "ai": "^5.0.8",
     "dayjs": "^1.11.13",

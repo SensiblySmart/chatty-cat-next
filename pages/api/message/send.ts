@@ -132,7 +132,7 @@ const handler = async function handler(
       if (!model) {
         throw new Error("Model not found");
       }
-      const llm = new LLM(model.model_name);
+      const llm = new LLM(model, userId);
       // 11. start streaming
       const { textStream } = await llm.streamText(llmMessages);
 

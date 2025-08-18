@@ -9,6 +9,7 @@ const envSchema = z.object({
   GOOGLE_CLIENT_ID: z.string(),
   GOOGLE_CLIENT_SECRET: z.string(),
   NODE_ENV: z.enum(["development", "production"]),
+  MEM0_API_KEY: z.string(),
 });
 
 let env = {} as z.infer<typeof envSchema>;

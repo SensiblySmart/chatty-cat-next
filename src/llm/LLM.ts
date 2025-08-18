@@ -1,24 +1,32 @@
 import { streamText, ModelMessage, LanguageModel } from "ai";
 import { gpt4o, gpt5, deepseekChat } from "./provider";
 import { ModelDto } from "@/src/dto/model.dto";
-
-const ModelMap: Record<ModelDto["model_name"], LanguageModel> = {
-  "gpt-4o": gpt4o,
-  "gpt-5": gpt5,
-  "deepseek-chat": deepseekChat,
-};
+import { createMem0, Mem0Provider } from "@mem0/vercel-ai-provider";
+import { env } from "@/utils/env";
 
 class LLM {
-  private model: LanguageModel;
+  private model: ModelDto;
+  private mem0: Mem0Provider;
 
-  constructor(modelName: ModelDto["model_name"]) {
-    this.model = ModelMap[modelName];
-    console.log("model", this.model);
+  constructor(model: ModelDto, userId: string) {
+    this.model = model;
+
+    this.mem0 = createMem0({
+      provider: "openai",
+      mem0ApiKey: env.MEM0_API_KEY,
+      apiKey: env.OPENAI_API_KEY,
+      config: {
+        // Options for LLM Provider
+      },
+      mem0Config: {
+        user_id: userId,
+      },
+    });
   }
 
   async streamText(messages: ModelMessage[]) {
     const textStream = streamText({
-      model: this.model,
+      model: this.mem0(this.model.model_name),
       messages,
     });
 
