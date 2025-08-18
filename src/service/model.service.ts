@@ -60,6 +60,21 @@ class ModelService {
       throw new Error(`Failed to delete model: ${error.message}`);
     }
   }
+
+  async getModelById(id: string): Promise<ModelDto> {
+    const { data: result, error } = await db
+      .getClient()
+      .from("models")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to get model: ${error.message}`);
+    }
+
+    return result as ModelDto;
+  }
 }
 
 export const modelService = ModelService.getInstance();

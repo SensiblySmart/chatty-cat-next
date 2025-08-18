@@ -5,8 +5,8 @@ export const ModelDtoSchema = z.object({
   id: z.string(),
   created_at: z.string(),
   updated_at: z.string(),
-  provider: z.string(),
-  model_name: z.string(),
+  provider: z.enum(["openai", "deepsseek"]),
+  model_name: z.enum(["gpt-4o", "gpt-5", "deepseek-chat"]),
 });
 
 export const CreateModelDtoSchema = ModelDtoSchema.omit({

@@ -10,9 +10,11 @@ import {
 } from "@/utils/api/handler";
 import { messageService } from "@/src/service/message.service";
 import { conversationService } from "@/src/service/conversation.service";
-import { llm } from "@/src/llm/LLM";
+import LLM from "@/src/llm/LLM";
 import { ModelMessage } from "ai";
 import { z } from "zod";
+import { modelService } from "@/src/service/model.service";
+import agentService from "@/src/service/agent.service";
 
 const handler = async function handler(
   req: ExtendedNextApiRequest,
@@ -22,13 +24,7 @@ const handler = async function handler(
   const userId = req.session.user.id;
 
   try {
-    // 1. 创建用户消息
-    await messageService.createMessage({
-      ...messageData,
-      role: "user",
-      sender_id: userId,
-    });
-
+    // 1. check conversation is exist
     const conversation = await conversationService.getConversationById(
       messageData.conversation_id
     );
@@ -37,12 +33,19 @@ const handler = async function handler(
       throw new Error("Conversation not found");
     }
 
-    // 2. 获取会话历史消息用于LLM上下文
+    // 2. create user message
+    await messageService.createMessage({
+      ...messageData,
+      role: "user",
+      sender_id: userId,
+    });
+
+    // 3. get history messages for LLM context
     const historyMessages = await messageService.getMessagesByConversationId(
       messageData.conversation_id
     );
 
-    // 3. 转换为LLM格式的消息
+    // 4. convert to LLM format messages
     const llmMessages: ModelMessage[] = historyMessages.map((msg) => ({
       role: msg.role,
       content: msg.content.text,
@@ -50,25 +53,25 @@ const handler = async function handler(
 
     console.log("llmMessages", llmMessages);
 
-    // 4. 设置SSE响应头
+    // 5. set SSE response headers
     res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
     res.setHeader("Cache-Control", "no-cache, no-transform");
     res.setHeader("Connection", "keep-alive");
     res.setHeader("X-Accel-Buffering", "no");
     res.flushHeaders?.();
 
-    // 5. 心跳机制
+    // 6. heartbeat mechanism
     const heartbeat = setInterval(() => {
       try {
         res.write(`: heartbeat\n\n`);
       } catch {}
     }, 15000);
 
-    // 6. 用于收集完整的agent回复
+    // 7. for collecting full agent response
     let fullAgentResponse = "";
     let isStreamCompleted = false;
 
-    // 7. 后台任务：保存完整的agent消息
+    // 8. background task: save full agent message
     const saveAgentMessage = async () => {
       if (fullAgentResponse.trim()) {
         try {
@@ -91,11 +94,11 @@ const handler = async function handler(
       }
     };
 
-    // 8. 清理函数
+    // 9. cleanup function
     const cleanup = () => {
       clearInterval(heartbeat);
 
-      // 如果流还没完成但连接断开了，仍然保存已收集的消息
+      // if stream is not completed but connection is closed, still save the collected messages
       if (!isStreamCompleted) {
         console.log(
           "Connection closed before stream completion, saving partial response"
@@ -108,15 +111,24 @@ const handler = async function handler(
       } catch {}
     };
 
-    // 9. 监听客户端断开
+    // 10. listen to client disconnect
     req.on("close", cleanup);
     req.on("aborted", cleanup);
 
     try {
-      // 10. 开始流式生成
+      const agent = await agentService.getAgentById(conversation.agent_id);
+      if (!agent) {
+        throw new Error("Agent not found");
+      }
+      const model = await modelService.getModelById(agent.model_id);
+      if (!model) {
+        throw new Error("Model not found");
+      }
+      const llm = new LLM(model.model_name);
+      // 11. start streaming
       const { textStream } = await llm.streamText(llmMessages);
 
-      // 11. 流式返回并收集完整响应
+      // 12. stream and collect full response
       for await (const chunk of textStream) {
         fullAgentResponse += chunk;
 
