@@ -19,6 +19,21 @@ export const CreateAgentDtoSchema = AgentDtoSchema.omit({
   updated_at: true,
 });
 
+export const UpdateAgentDtoSchema = z.object({
+  id: z.string(),
+  display_name: z.string().optional(),
+  description: z.string().optional(),
+  avatar_url: z.string().optional(),
+  model_id: z.string().optional(),
+  system_prompt: z.string().optional(),
+});
+
+export const DeleteAgentDtoSchema = z.object({
+  id: z.string(),
+});
+
 // 自动推导 TypeScript 类型
 export type AgentDto = z.infer<typeof AgentDtoSchema>;
 export type CreateAgentDto = z.infer<typeof CreateAgentDtoSchema>;
+export type UpdateAgentDto = z.infer<typeof UpdateAgentDtoSchema>;
+export type DeleteAgentDto = z.infer<typeof DeleteAgentDtoSchema>;

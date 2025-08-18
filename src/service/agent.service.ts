@@ -1,4 +1,4 @@
-import { AgentDto, CreateAgentDto } from "@/src/dto/agent.dto";
+import { AgentDto, CreateAgentDto, UpdateAgentDto } from "@/src/dto/agent.dto";
 import db from "./db";
 
 class AgentService {
@@ -69,6 +69,36 @@ class AgentService {
     }
 
     return result as AgentDto;
+  }
+
+  /**
+   * 更新 agent
+   */
+  async updateAgent(data: UpdateAgentDto): Promise<AgentDto> {
+    const { id, ...updates } = data;
+    const { data: result, error } = await db
+      .getClient()
+      .from("agents")
+      .update(updates)
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to update agent: ${error.message}`);
+    }
+
+    return result as AgentDto;
+  }
+
+  /**
+   * 删除 agent
+   */
+  async deleteAgent(id: string): Promise<void> {
+    const { error } = await db.getClient().from("agents").delete().eq("id", id);
+    if (error) {
+      throw new Error(`Failed to delete agent: ${error.message}`);
+    }
   }
 }
 
