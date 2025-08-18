@@ -46,24 +46,26 @@ const handler = async function handler(
       messageData.conversation_id
     );
 
-    // 4. convert to LLM format messages
-    const messages = await LLM.getMessagesWithSystemPrompt(
-      historyMessages.map((msg) => ({
-        role: msg.role,
-        content: msg.content.text,
-      })),
-      conversation
-    );
+    const messagesWithoutSystemPrompt = historyMessages.map((msg) => ({
+      role: msg.role,
+      content: msg.content.text,
+    }));
 
     // if title is not set, generate title
     if (!conversation.title) {
-      const title = await generateTitle(messages);
+      const title = await generateTitle(messagesWithoutSystemPrompt);
       await conversationService.updateConversationTitle(
         messageData.conversation_id,
         title
       );
-      console.log("Title generated:", title);
     }
+
+    // 4. convert to LLM format messages
+    const messages = await LLM.getMessagesWithSystemPrompt(
+      messagesWithoutSystemPrompt,
+      conversation
+    );
+
     // 5. set SSE response headers
     res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
     res.setHeader("Cache-Control", "no-cache, no-transform");
