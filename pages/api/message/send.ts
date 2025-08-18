@@ -15,6 +15,7 @@ import { ModelMessage } from "ai";
 import { z } from "zod";
 import { modelService } from "@/src/service/model.service";
 import agentService from "@/src/service/agent.service";
+import { generateTitle } from "@/src/llm/helper";
 
 const handler = async function handler(
   req: ExtendedNextApiRequest,
@@ -51,8 +52,15 @@ const handler = async function handler(
       content: msg.content.text,
     }));
 
-    console.log("llmMessages", llmMessages);
-
+    // if title is not set, generate title
+    if (!conversation.title) {
+      const title = await generateTitle(llmMessages);
+      await conversationService.updateConversationTitle(
+        messageData.conversation_id,
+        title
+      );
+      console.log("Title generated:", title);
+    }
     // 5. set SSE response headers
     res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
     res.setHeader("Cache-Control", "no-cache, no-transform");

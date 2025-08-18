@@ -116,6 +116,25 @@ class ConversationService {
 
     return result as ConversationDto;
   }
+
+  async updateConversationTitle(
+    id: string,
+    title: string
+  ): Promise<ConversationDto> {
+    const { data: result, error } = await db
+      .getClient()
+      .from("conversations")
+      .update({ title })
+      .eq("id", id)
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to update conversation title: ${error.message}`);
+    }
+
+    return result as ConversationDto;
+  }
 }
 
 export const conversationService = ConversationService.getInstance();

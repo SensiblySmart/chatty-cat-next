@@ -1,7 +1,8 @@
 import { generateText } from "ai";
 import { gpt4o } from "./provider";
+import { ModelMessage } from "ai";
 
-export const generateTitle = async (text: string) => {
+export const generateTitle = async (messages: ModelMessage[]) => {
   const result = await generateText({
     model: gpt4o,
     messages: [
@@ -12,7 +13,7 @@ export const generateTitle = async (text: string) => {
       },
       {
         role: "user",
-        content: text,
+        content: messages.map((msg) => msg.content).join("\n"),
       },
     ],
   });
