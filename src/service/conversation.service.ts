@@ -47,6 +47,7 @@ class ConversationService {
       .from("conversations")
       .select("*")
       .eq("user_id", userId)
+      .eq("is_deleted", false)
       .limit(100)
       .order("last_message_at", { ascending: false });
 
@@ -124,6 +125,26 @@ class ConversationService {
 
     if (error) {
       throw new Error(`Failed to update conversation title: ${error.message}`);
+    }
+
+    return result as ConversationDto;
+  }
+
+  async deleteConversation(
+    id: string,
+    userId: string
+  ): Promise<ConversationDto> {
+    const { data: result, error } = await db
+      .getClient()
+      .from("conversations")
+      .update({ is_deleted: true })
+      .eq("id", id)
+      .eq("user_id", userId)
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to delete conversation: ${error.message}`);
     }
 
     return result as ConversationDto;

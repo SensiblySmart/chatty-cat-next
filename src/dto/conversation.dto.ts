@@ -10,6 +10,7 @@ export const ConversationEntitySchema = z.object({
   title: z.string(),
   agent_id: z.string(),
   user_id: z.string(),
+  is_deleted: z.boolean(),
 });
 
 export const CreateConversationDtoSchema = ConversationEntitySchema.omit({
@@ -17,6 +18,7 @@ export const CreateConversationDtoSchema = ConversationEntitySchema.omit({
   updated_at: true,
   last_message_at: true,
   title: true,
+  is_deleted: true,
 });
 
 export const CreateConversatioRequestSchema = ConversationEntitySchema.omit({
@@ -25,6 +27,7 @@ export const CreateConversatioRequestSchema = ConversationEntitySchema.omit({
   last_message_at: true,
   title: true,
   user_id: true,
+  is_deleted: true,
 });
 
 // 自动推导 TypeScript 类型
