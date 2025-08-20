@@ -1,56 +1,44 @@
 import { streamText, ModelMessage, LanguageModel } from "ai";
 import { ModelDto } from "@/src/dto/model.dto";
-import { createMem0, Mem0Provider } from "@mem0/vercel-ai-provider";
 import { env } from "@/utils/env";
-import { ConversationDto } from "../dto/conversation.dto";
-import { agentService } from "../service/agent.service";
+import MemoryClient, { Memory, Message } from "mem0ai";
+import { gpt4o } from "./provider";
 
 class LLM {
   private model: ModelDto;
-  private mem0: Mem0Provider;
+  private mem0: MemoryClient;
+  private userId: string;
 
   constructor(model: ModelDto, userId: string) {
     this.model = model;
 
-    this.mem0 = createMem0({
-      provider: "openai",
-      mem0ApiKey: env.MEM0_API_KEY,
-      apiKey: env.OPENAI_API_KEY,
-      config: {
-        // Options for LLM Provider
-      },
-      mem0Config: {
-        user_id: userId,
-      },
-    });
+    this.mem0 = new MemoryClient({ apiKey: env.MEM0_API_KEY });
+    this.userId = userId;
   }
 
-  async streamText(messages: ModelMessage[]) {
+  async streamText(messages: Message[], systemPrompt: string) {
+    console.log("Messages: ", messages);
+    const memory = await this.mem0.search(
+      messages.findLast((msg) => msg.role === "user")?.content as string,
+      {
+        user_id: this.userId,
+      }
+    );
+
+    console.log("Related memory: ", memory);
+
     const textStream = streamText({
-      model: this.mem0(this.model.model_name),
-      messages,
+      model: gpt4o,
+      messages: messages as ModelMessage[],
+      system: await this.appendMemoryToSystemPrompt(systemPrompt, memory),
     });
 
     return textStream;
   }
 
-  static async getMessagesWithSystemPrompt(
-    messagesWithoutSystemPrompt: ModelMessage[],
-    conversation: ConversationDto
-  ) {
-    const agent = await agentService.getAgentById(conversation.agent_id);
-    if (!agent) {
-      throw new Error("Agent not found");
-    }
-
-    const baseMessages: ModelMessage[] = [
-      {
-        role: "system",
-        content: agent.system_prompt,
-      },
-    ];
-
-    return [...baseMessages, ...messagesWithoutSystemPrompt];
+  private async appendMemoryToSystemPrompt(system: string, memories: Memory[]) {
+    const memoryTexts = memories.map((m) => m.memory).join("\n");
+    return `${system}\n\n${memoryTexts}`;
   }
 }
 

@@ -1,7 +1,7 @@
 // src/dto/message.dto.ts
 import { z } from "zod";
 
-export const MessageRoleSchema = z.enum(["system", "user", "assistant"]);
+export const MessageRoleSchema = z.enum(["user", "assistant"]);
 
 export const MessageContentSchema = z.object({
   text: z.string(),

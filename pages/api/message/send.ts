@@ -16,6 +16,7 @@ import { z } from "zod";
 import { modelService } from "@/src/service/model.service";
 import agentService from "@/src/service/agent.service";
 import { generateTitle } from "@/src/llm/helper";
+import { Message } from "mem0ai";
 
 const handler = async function handler(
   req: ExtendedNextApiRequest,
@@ -47,26 +48,20 @@ const handler = async function handler(
       messageData.conversation_id
     );
 
-    const messagesWithoutSystemPrompt = historyMessages.map((msg) => ({
+    const messages: Message[] = historyMessages.map((msg) => ({
       role: msg.role,
       content: msg.content.text,
     }));
 
     // if title is not set, generate title
     if (!conversation.title) {
-      const title = await generateTitle(messagesWithoutSystemPrompt);
+      const title = await generateTitle(messages);
       await conversationService.updateConversationTitle(
         messageData.conversation_id,
         title,
         userId
       );
     }
-
-    // 4. convert to LLM format messages
-    const messages = await LLM.getMessagesWithSystemPrompt(
-      messagesWithoutSystemPrompt,
-      conversation
-    );
 
     // 5. set SSE response headers
     res.setHeader("Content-Type", "text/event-stream; charset=utf-8");
@@ -142,7 +137,10 @@ const handler = async function handler(
       }
       const llm = new LLM(model, userId);
       // 11. start streaming
-      const { textStream } = await llm.streamText(messages);
+      const { textStream } = await llm.streamText(
+        messages,
+        agent.system_prompt
+      );
 
       // 12. stream and collect full response
       for await (const chunk of textStream) {
