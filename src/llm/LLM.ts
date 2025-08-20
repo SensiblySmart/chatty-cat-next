@@ -3,34 +3,31 @@ import { ModelDto } from "@/src/dto/model.dto";
 import { env } from "@/utils/env";
 import MemoryClient, { Memory, Message } from "mem0ai";
 import { gpt4o } from "./provider";
+import { createMem0, Mem0Provider } from "@mem0/vercel-ai-provider";
 
 class LLM {
   private model: ModelDto;
-  private mem0: MemoryClient;
+  private mem0: Mem0Provider;
   private userId: string;
 
   constructor(model: ModelDto, userId: string) {
     this.model = model;
 
-    this.mem0 = new MemoryClient({ apiKey: env.MEM0_API_KEY });
+    // this.mem0 = new MemoryClient({ apiKey: env.MEM0_API_KEY });
+    this.mem0 = createMem0({
+      provider: "openai",
+      mem0Config: {
+        user_id: userId,
+      },
+    });
     this.userId = userId;
   }
 
   async streamText(messages: Message[], systemPrompt: string) {
-    console.log("Messages: ", messages);
-    const memory = await this.mem0.search(
-      messages.findLast((msg) => msg.role === "user")?.content as string,
-      {
-        user_id: this.userId,
-      }
-    );
-
-    console.log("Related memory: ", memory);
-
     const textStream = streamText({
-      model: gpt4o,
+      model: this.mem0(this.model.model_name, { top_k: 3 }),
       messages: messages as ModelMessage[],
-      system: await this.appendMemoryToSystemPrompt(systemPrompt, memory),
+      system: systemPrompt,
     });
 
     return textStream;
