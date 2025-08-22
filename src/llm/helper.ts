@@ -1,6 +1,9 @@
-import { generateText } from "ai";
+import { generateText, embed, generateObject } from "ai";
 import { gpt4o } from "./provider";
+import { openai } from "@ai-sdk/openai";
 import { Message } from "mem0ai";
+import { z } from "zod";
+import { memoryClassifierAndSummarizerPrompt } from "@/src/prompt/memory";
 
 export const generateTitle = async (messages: Message[]) => {
   const result = await generateText({
@@ -15,4 +18,39 @@ export const generateTitle = async (messages: Message[]) => {
     ],
   });
   return result.text;
+};
+
+export const createEmbedding = async (text: string) => {
+  const { embedding } = await embed({
+    model: openai.textEmbeddingModel("text-embedding-3-small"),
+    value: text,
+  });
+  return embedding;
+};
+
+export const evaluateMessageForMemorizing = async (content: string) => {
+  const { object } = await generateObject({
+    model: openai("gpt-4o-mini"),
+    schema: z.object({
+      importance: z.number().int().min(0).max(5),
+      catagory: z
+        .union([
+          z.enum([
+            "preference",
+            "event",
+            "personality",
+            "rule",
+            "emotion",
+            "other",
+          ]),
+          z.literal(""),
+        ])
+        .optional(),
+      content: z.string(),
+      should_memorize: z.boolean(),
+    }),
+    system: memoryClassifierAndSummarizerPrompt,
+    prompt: content,
+  });
+  return object;
 };
