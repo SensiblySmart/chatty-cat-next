@@ -41,3 +41,4 @@ export type CreateMessageDto = z.infer<typeof CreateMessageDtoSchema>;
 export type GetMessageChunkRequest = z.infer<
   typeof GetMessageChunkRequestSchema
 >;
+export type MessageContent = z.infer<typeof MessageContentSchema>;

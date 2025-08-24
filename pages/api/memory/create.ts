@@ -8,7 +8,7 @@ import {
   ExtendedNextApiRequest,
 } from "@/utils/api/handler";
 import { z } from "zod";
-import { MemoryDtoSchema } from "@/src/dto/memory";
+import { MemoryDtoSchema } from "@/src/dto/memory.dto";
 import {
   createEmbedding,
   evaluateMessageForMemorizing,

@@ -1,5 +1,5 @@
 import db from "./db";
-import { CreateMemoryDto, MemoryDto } from "../dto/memory";
+import { CreateMemoryDto, MemoryDto } from "../dto/memory.dto";
 
 class MemoryService {
   private static instance: MemoryService;
@@ -28,6 +28,23 @@ class MemoryService {
     }
 
     return result as MemoryDto;
+  }
+
+  async searchMemory(embedding: number[]) {
+    const { data: result, error } = await db
+      .getClient()
+      .from("memories")
+      .select("*")
+      .eq("embedding", embedding)
+      .limit(10);
+
+    if (error) {
+      throw new Error(`Failed to search memory: ${error.message}`, {
+        cause: error,
+      });
+    }
+
+    return result as MemoryDto[];
   }
 }
 
