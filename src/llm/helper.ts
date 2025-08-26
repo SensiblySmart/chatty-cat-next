@@ -4,7 +4,8 @@ import { openai } from "@ai-sdk/openai";
 import { Message } from "mem0ai";
 import { z } from "zod";
 import { memoryClassifierAndSummarizerPrompt } from "@/src/prompt/memory";
-import { memoryTriggerDetectorPrompt } from "@/src/prompt/MemoryTriggerDetectorPrompt";
+import { memoryTriggerDetectorPrompt } from "@/src/prompt/memoryTriggerDetectorPrompt";
+import { factExtractorPrompt } from "@/src/prompt/factExtractorPrompt";
 
 export const generateTitle = async (messages: Message[]) => {
   const result = await generateText({
@@ -94,7 +95,7 @@ export const extractMemoryFact = async (content: string) => {
       ]),
       fact: z.string(),
     }),
-    system: memoryTriggerDetectorPrompt,
+    system: factExtractorPrompt,
     prompt: content,
   });
   return object;

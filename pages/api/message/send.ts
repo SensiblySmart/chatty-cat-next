@@ -23,7 +23,6 @@ import {
 import { Message } from "mem0ai";
 import MemoryClient from "mem0ai";
 import { env } from "@/utils/env";
-import logger from "@/utils/logger";
 
 const handler = async function handler(
   req: ExtendedNextApiRequest,
@@ -45,14 +44,14 @@ const handler = async function handler(
       throw new Error("Conversation not found");
     }
 
-    logger.info("Detecting memory trigger");
+    console.log("Detecting memory trigger");
     const shouldRemember = await detectMemoryTrigger(messageData.content.text);
-    logger.info({ shouldRemember }, "Memory trigger detected");
+    console.log({ shouldRemember }, "Memory trigger detected");
 
     if (shouldRemember.should_remember) {
-      logger.info("Extracting memory fact");
+      console.log("Extracting memory fact");
       const memoryFact = await extractMemoryFact(messageData.content.text);
-      logger.info({ memoryFact }, "Memory fact extracted");
+      console.log({ memoryFact }, "Memory fact extracted");
       const memory = await mem0.add(
         [
           {
@@ -70,7 +69,7 @@ const handler = async function handler(
           ],
         }
       );
-      logger.info({ memory }, "Memory added");
+      console.log({ memory }, "Memory added");
     }
 
     // 2. create user message

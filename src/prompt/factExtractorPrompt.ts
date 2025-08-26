@@ -1,4 +1,4 @@
-export const memoryTriggerDetectorPrompt = `
+export const factExtractorPrompt = `
 You are a Memory Extractor for a companion AI system. 
 Your job: extract the key information from a user message that should be remembered, and assign it to one memory category.
 
