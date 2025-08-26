@@ -15,8 +15,15 @@ import { ModelMessage } from "ai";
 import { z } from "zod";
 import { modelService } from "@/src/service/model.service";
 import agentService from "@/src/service/agent.service";
-import { generateTitle } from "@/src/llm/helper";
+import {
+  detectMemoryTrigger,
+  extractMemoryFact,
+  generateTitle,
+} from "@/src/llm/helper";
 import { Message } from "mem0ai";
+import MemoryClient from "mem0ai";
+import { env } from "@/utils/env";
+import logger from "@/utils/logger";
 
 const handler = async function handler(
   req: ExtendedNextApiRequest,
@@ -24,6 +31,8 @@ const handler = async function handler(
 ) {
   const messageData = req.validated as z.infer<typeof SendMessageRequestSchema>;
   const userId = req.session.user.id;
+
+  const mem0 = new MemoryClient({ apiKey: env.MEM0_API_KEY });
 
   try {
     // 1. check conversation is exist
@@ -34,6 +43,34 @@ const handler = async function handler(
 
     if (!conversation) {
       throw new Error("Conversation not found");
+    }
+
+    logger.info("Detecting memory trigger");
+    const shouldRemember = await detectMemoryTrigger(messageData.content.text);
+    logger.info({ shouldRemember }, "Memory trigger detected");
+
+    if (shouldRemember.should_remember) {
+      logger.info("Extracting memory fact");
+      const memoryFact = await extractMemoryFact(messageData.content.text);
+      logger.info({ memoryFact }, "Memory fact extracted");
+      const memory = await mem0.add(
+        [
+          {
+            role: "user",
+            content: messageData.content.text,
+          },
+        ],
+        {
+          user_id: userId,
+          version: "v2",
+          custom_categories: [
+            {
+              [memoryFact.category]: memoryFact.category,
+            },
+          ],
+        }
+      );
+      logger.info({ memory }, "Memory added");
     }
 
     // 2. create user message

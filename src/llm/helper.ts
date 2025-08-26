@@ -4,6 +4,7 @@ import { openai } from "@ai-sdk/openai";
 import { Message } from "mem0ai";
 import { z } from "zod";
 import { memoryClassifierAndSummarizerPrompt } from "@/src/prompt/memory";
+import { memoryTriggerDetectorPrompt } from "@/src/prompt/MemoryTriggerDetectorPrompt";
 
 export const generateTitle = async (messages: Message[]) => {
   const result = await generateText({
@@ -50,6 +51,50 @@ export const evaluateMessageForMemorizing = async (content: string) => {
       should_memorize: z.boolean(),
     }),
     system: memoryClassifierAndSummarizerPrompt,
+    prompt: content,
+  });
+  return object;
+};
+
+export const detectMemoryTrigger = async (content: string) => {
+  const { object } = await generateObject({
+    model: openai("gpt-4o-mini"),
+    schema: z.object({
+      should_remember: z.boolean(),
+      trigger_type: z.enum([
+        "Explicit",
+        "Repetition",
+        "Aspirations",
+        "Correction",
+        "EmotionalSalience",
+        "ContextualContinuity",
+        "None",
+      ]),
+    }),
+    system: memoryTriggerDetectorPrompt,
+    prompt: content,
+  });
+  return object;
+};
+
+export const extractMemoryFact = async (content: string) => {
+  const { object } = await generateObject({
+    model: openai("gpt-4o-mini"),
+    schema: z.object({
+      category: z.enum([
+        "Identity",
+        "Preferences",
+        "Communication",
+        "MoodPatterns",
+        "Boundaries",
+        "RelationshipHistory",
+        "PersonalSymbols",
+        "Aspirations",
+        "Other",
+      ]),
+      fact: z.string(),
+    }),
+    system: memoryTriggerDetectorPrompt,
     prompt: content,
   });
   return object;
