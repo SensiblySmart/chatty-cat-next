@@ -11,18 +11,12 @@ import {
 import { messageService } from "@/src/service/message.service";
 import { conversationService } from "@/src/service/conversation.service";
 import LLM from "@/src/llm/LLM";
-import { ModelMessage } from "ai";
 import { z } from "zod";
 import { modelService } from "@/src/service/model.service";
 import agentService from "@/src/service/agent.service";
-import {
-  detectMemoryTrigger,
-  extractMemoryFact,
-  generateTitle,
-} from "@/src/llm/helper";
+import { generateTitle } from "@/src/llm/helper";
 import { Message } from "mem0ai";
-import MemoryClient from "mem0ai";
-import { env } from "@/utils/env";
+import MemoryManager from "@/src/memory/MemoryManager";
 
 const handler = async function handler(
   req: ExtendedNextApiRequest,
@@ -30,8 +24,6 @@ const handler = async function handler(
 ) {
   const messageData = req.validated as z.infer<typeof SendMessageRequestSchema>;
   const userId = req.session.user.id;
-
-  const mem0 = new MemoryClient({ apiKey: env.MEM0_API_KEY });
 
   try {
     // 1. check conversation is exist
@@ -44,40 +36,15 @@ const handler = async function handler(
       throw new Error("Conversation not found");
     }
 
-    console.log("Detecting memory trigger");
-    const shouldRemember = await detectMemoryTrigger(messageData.content.text);
-    console.log({ shouldRemember }, "Memory trigger detected");
-
-    if (shouldRemember.should_remember) {
-      console.log("Extracting memory fact");
-      const memoryFact = await extractMemoryFact(messageData.content.text);
-      console.log({ memoryFact }, "Memory fact extracted");
-      const memory = await mem0.add(
-        [
-          {
-            role: "user",
-            content: messageData.content.text,
-          },
-        ],
-        {
-          user_id: userId,
-          version: "v2",
-          custom_categories: [
-            {
-              [memoryFact.category]: memoryFact.category,
-            },
-          ],
-        }
-      );
-      console.log({ memory }, "Memory added");
-    }
-
     // 2. create user message
-    await messageService.createMessage({
+    const userMessage = await messageService.createMessage({
       ...messageData,
       role: "user",
       sender_id: userId,
     });
+
+    const memoryManager = new MemoryManager(userId);
+    await memoryManager.processUserMessage(userMessage);
 
     // 3. get history messages for LLM context
     const historyMessages = await messageService.getMessagesByConversationId(
@@ -171,12 +138,18 @@ const handler = async function handler(
       if (!model) {
         throw new Error("Model not found");
       }
-      const llm = new LLM(model, userId);
+      const llm = new LLM(model);
+
+      const persistentMemoryPromptPatch =
+        await memoryManager.getPersistentMemoryPrompt();
+
+      const systemPrompt =
+        agent.system_prompt + "\n\n" + persistentMemoryPromptPatch;
+
+      console.log("[Message] System Prompt", systemPrompt);
+
       // 11. start streaming
-      const { textStream } = await llm.streamText(
-        messages,
-        agent.system_prompt
-      );
+      const { textStream } = await llm.streamText(messages, systemPrompt);
 
       // 12. stream and collect full response
       for await (const chunk of textStream) {

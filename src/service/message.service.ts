@@ -44,6 +44,7 @@ class MessageService {
       .from("messages")
       .select("*")
       .eq("conversation_id", conversationId)
+      .limit(20) // 只取最近 20 条 需要注意是否会有影响
       .order("created_at", { ascending: true });
 
     if (error) {
