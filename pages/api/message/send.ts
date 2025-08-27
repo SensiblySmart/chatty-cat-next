@@ -17,6 +17,7 @@ import agentService from "@/src/service/agent.service";
 import { generateTitle } from "@/src/llm/helper";
 import { Message } from "mem0ai";
 import MemoryManager from "@/src/memory/MemoryManager";
+import Langfuse from "langfuse";
 
 const handler = async function handler(
   req: ExtendedNextApiRequest,
@@ -143,8 +144,18 @@ const handler = async function handler(
       const persistentMemoryPromptPatch =
         await memoryManager.getPersistentMemoryPrompt();
 
-      const systemPrompt =
-        agent.system_prompt + "\n\n" + persistentMemoryPromptPatch;
+      const memoryPromptPatch = await memoryManager.getRelatedMemoryPrompt(
+        userMessage
+      );
+
+      const langfuse = new Langfuse({});
+      const prompt = await langfuse.getPrompt("kuromi");
+      const compiledPrompt = prompt.compile({
+        persistentMemory: persistentMemoryPromptPatch,
+        onDemandMemory: memoryPromptPatch,
+      });
+
+      const systemPrompt = compiledPrompt;
 
       console.log("[Message] System Prompt", systemPrompt);
 

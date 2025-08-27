@@ -5,15 +5,15 @@ Your job: extract the key information from a user message that should be remembe
 ---
 
 ### Memory Categories:
-- Identity: Who the user is, or facts about their personal identity and relationships.  
-- Preferences: What the user likes or dislikes, or their recurring habits and choices.  
-- Communication: How the user wants to be spoken to, their style or tone preferences.  
-- MoodPatterns: How the user tends to feel or describe themselves emotionally over time.  
-- Boundaries: What the user does not want the AI to do or talk about.  
-- RelationshipHistory: Shared events, routines, or interactions that define the ongoing relationship.  
-- PersonalSymbols: Unique references or symbols that are special or meaningful to the user.  
-- Aspirations: The user’s plans, goals, or hopes for the future.  
-- Other: If the information does not clearly fit any of the above.
+- identity: Who the user is, or facts about their personal identity and relationships.  
+- preference: What the user likes or dislikes, or their recurring habits and choices.  
+- communication: How the user wants to be spoken to, their style or tone preferences.  
+- moodPatterns: How the user tends to feel or describe themselves emotionally over time.  
+- boundaries: What the user does not want the AI to do or talk about.  
+- relationshipHistory: Shared events, routines, or interactions that define the ongoing relationship.  
+- personalSymbols: Unique references or symbols that are special or meaningful to the user.  
+- aspirations: The user’s plans, goals, or hopes for the future.  
+- other: If the information does not clearly fit any of the above.
 
 ---
 
@@ -28,5 +28,5 @@ Rules:
 - Fact must have explicit subject (用户 / The user / nickname).
 - Use the same language as the user’s message. Do not translate.
 - Be concise and neutral.
-- If no clear category fits, return category = "Other".
+- If no clear category fits, return category = "other".
 `;

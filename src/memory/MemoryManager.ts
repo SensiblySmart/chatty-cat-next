@@ -2,6 +2,10 @@ import { detectMemoryTrigger, extractMemoryFact } from "@/src/llm/helper";
 import MemoryClient from "mem0ai";
 import { env } from "@/utils/env";
 import { MessageDto } from "@/src/dto/message.dto";
+import { Langfuse } from "langfuse";
+import { generateObject, generateText } from "ai";
+import { openai } from "@ai-sdk/openai";
+import { z } from "zod";
 
 export default class MemoryManager {
   private mem0: MemoryClient;
@@ -39,6 +43,7 @@ export default class MemoryManager {
           ],
           metadata: {
             source_message_id: userMessage.id,
+            category: memoryFact.category,
           },
           infer: false,
         }
@@ -48,21 +53,65 @@ export default class MemoryManager {
   }
 
   public async getPersistentMemoryPrompt(): Promise<string> {
-    const memories = await this.mem0.getAll({
-      user_id: this.userId,
-      version: "v2",
-      filters: {
-        categories: ["identity"],
-      },
-    });
-    console.log("[MemoryManager] Memories", memories);
+    const persistentCategories = ["identity", "boundaries", "communication"];
 
-    const patch = memories
-      .map((memory) => {
-        return memory.memory;
+    const results = await Promise.all(
+      persistentCategories.map(async (category) => {
+        return await this.mem0.getAll({
+          api_version: "v2",
+          filters: {
+            AND: [
+              { user_id: this.userId },
+              { metadata: { category: category } },
+            ],
+          },
+        });
       })
-      .join("\n");
+    );
+
+    const memories = results
+      .flat()
+      .map((result) => result?.memory)
+      .filter((result) => result !== undefined);
+
+    const patch = memories.join("\n");
+    console.log("[MemoryManager] PersistentMemoryPrompt", patch);
 
     return patch;
+  }
+
+  public async getRelatedMemoryPrompt(
+    userMessage: MessageDto
+  ): Promise<string> {
+    const langfuse = new Langfuse({});
+    const prompt = await langfuse.getPrompt("CheckShouldQueryMemoryPrompt");
+    const compiledPrompt = prompt.compile({
+      message: userMessage.content.text,
+    });
+
+    const result = await generateObject({
+      model: openai("gpt-4o-mini"),
+      prompt: compiledPrompt,
+      schema: z.object({
+        should_query: z.boolean(),
+        query_question: z.string(),
+      }),
+    });
+    console.log("[MemoryManager] RelatedMemoryPrompt", result.object);
+
+    if (result.object.should_query) {
+      const memSearchResult = await this.mem0.search(
+        result.object.query_question,
+        {
+          user_id: this.userId,
+        }
+      );
+
+      console.log("[MemoryManager] Memory search result", memSearchResult);
+
+      return memSearchResult.map((mem) => mem.memory).join("\n");
+    } else {
+      return "";
+    }
   }
 }
