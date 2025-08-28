@@ -28,7 +28,7 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
   try {
     const cookieHeader = req.headers.cookie || "";
 
-    const origin = "https://chattykitty.sensiblysmartllc.com";
+    const origin = env.NEXTAUTH_URL
 
     const res = await fetch(`${origin}/api/google/session-handoff`, {
       method: "POST",
