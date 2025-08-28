@@ -6,7 +6,7 @@ export const gpt5 = openai("gpt-5");
 // TODO: change to deepseek-chat
 export const deepseekChat = openai("gpt-5");
 
-export const getModelByModelName = (modelName: ModelDto["model_name"]) => {
+export const getModelByModelName = (modelName: ModelDto["modelName"]) => {
   switch (modelName) {
     case "gpt-4o":
       return gpt4o;
@@ -14,5 +14,8 @@ export const getModelByModelName = (modelName: ModelDto["model_name"]) => {
       return gpt5;
     case "deepseek-chat":
       return gpt4o;
+
+    default:
+      return gpt4o
   }
 };

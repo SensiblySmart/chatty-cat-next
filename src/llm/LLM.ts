@@ -13,7 +13,7 @@ class LLM {
 
   async streamText(messages: Message[], systemPrompt: string) {
     const textStream = streamText({
-      model: getModelByModelName(this.model.model_name),
+      model: getModelByModelName(this.model.modelName),
       messages: messages as ModelMessage[],
       system: systemPrompt,
     });

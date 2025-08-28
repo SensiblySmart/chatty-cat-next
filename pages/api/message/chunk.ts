@@ -20,14 +20,14 @@ const handler = async function handler(
   >;
 
   try {
-    const { conversation_id, page, limit, before_message_id } = queryData;
+    const { conversationId, page, limit, beforeMessageId } = queryData;
 
     // 获取消息分片
     const result = await messageService.getMessageChunk(
-      conversation_id,
+      conversationId,
       page,
       limit,
-      before_message_id
+      beforeMessageId
     );
 
     return res.status(200).json({
