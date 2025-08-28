@@ -90,7 +90,7 @@ export default function AgentsPage() {
 
   function startEditSystemPrompt(agent: AgentDto) {
     setEditingId(agent.id);
-    setEditingPrompt(agent.system_prompt);
+    setEditingPrompt(agent.systemPromptId);
   }
 
   function cancelEdit() {
@@ -271,10 +271,10 @@ export default function AgentsPage() {
                 agents.map((agent) => (
                   <tr key={agent.id} className="border-b align-top">
                     <td className="p-2 whitespace-pre-wrap">
-                      {agent.display_name}
+                      {agent.displayName}
                     </td>
                     <td className="p-2 whitespace-pre-wrap">
-                      {agent.model_id}
+                      {agent.modelId}
                     </td>
                     <td className="p-2 whitespace-pre-wrap">
                       {agent.description}
@@ -288,7 +288,7 @@ export default function AgentsPage() {
                         />
                       ) : (
                         <pre className="text-xs whitespace-pre-wrap">
-                          {agent.system_prompt}
+                          {agent.systemPromptId}
                         </pre>
                       )}
                     </td>
