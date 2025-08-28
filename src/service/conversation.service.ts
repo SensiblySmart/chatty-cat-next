@@ -2,7 +2,7 @@ import {
   ConversationDto,
   CreateConversationDto,
 } from "@/src/dto/conversation.dto";
-import db from "./db";
+import { prisma } from '@/prisma'
 
 class ConversationService {
   private static instance: ConversationService;
@@ -16,71 +16,43 @@ class ConversationService {
     return ConversationService.instance;
   }
 
-  /**
-   * 创建新的 conversation 记录
-   */
   async createConversation(
     data: CreateConversationDto
   ): Promise<ConversationDto> {
-    const { data: result, error } = await db
-      .getClient()
-      .from("conversations")
-      .insert({
+    const conversation = await prisma.conversation.create({
+      data: {
         ...data,
-      })
-      .select()
-      .single();
+      },
+    });
 
-    if (error) {
-      throw new Error(`Failed to create conversation: ${error.message}`);
-    }
-
-    return result as ConversationDto;
+    return conversation;
   }
 
-  /**
-   * 获取所有 conversation 记录
-   */
   async listAllConversations(userId: string): Promise<ConversationDto[]> {
-    const { data: result, error } = await db
-      .getClient()
-      .from("conversations")
-      .select("*")
-      .eq("user_id", userId)
-      .eq("is_deleted", false)
-      .limit(100)
-      .order("last_message_at", { ascending: false });
-
-    if (error) {
-      throw new Error(`Failed to list conversations: ${error.message}`);
-    }
-
-    return result as ConversationDto[];
+    const conversations = await prisma.conversation.findMany({
+      where: {
+        userId,
+        isDeleted: false,
+      },
+      orderBy: {
+        lastMessageAt: 'desc',
+      },
+    });
+    return conversations;
   }
 
-  /**
-   * 根据 ID 获取 conversation
-   */
   async getConversation(
     id: string,
     userId: string
   ): Promise<ConversationDto | null> {
-    const { data: result, error } = await db
-      .getClient()
-      .from("conversations")
-      .select("*")
-      .eq("id", id)
-      .eq("user_id", userId)
-      .single();
+    const conversation = await prisma.conversation.findUnique({
+      where: {
+        id,
+        userId,
+      },
+    });
 
-    if (error) {
-      if (error.code === "PGRST116") {
-        return null; // No rows returned
-      }
-      throw new Error(`Failed to get conversation: ${error.message}`);
-    }
-
-    return result as ConversationDto;
+    return conversation;
   }
 
   /**
@@ -90,23 +62,16 @@ class ConversationService {
     id: string,
     userId: string
   ): Promise<ConversationDto> {
-    const { data: result, error } = await db
-      .getClient()
-      .from("conversations")
-      .update({
-        last_message_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", id)
-      .eq("user_id", userId)
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to update conversation: ${error.message}`);
-    }
-
-    return result as ConversationDto;
+    const conversation = await prisma.conversation.update({
+      where: {
+        id,
+        userId,
+      },
+      data: {
+        lastMessageAt: new Date().toISOString(),
+      },
+    });
+    return conversation;
   }
 
   async updateConversationTitle(
@@ -114,40 +79,32 @@ class ConversationService {
     title: string,
     userId: string
   ): Promise<ConversationDto> {
-    const { data: result, error } = await db
-      .getClient()
-      .from("conversations")
-      .update({ title })
-      .eq("id", id)
-      .eq("user_id", userId)
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to update conversation title: ${error.message}`);
-    }
-
-    return result as ConversationDto;
+    const conversation = await prisma.conversation.update({
+      where: {
+        id,
+        userId,
+      },
+      data: {
+        title,
+      },
+    });
+    return conversation;
   }
 
   async deleteConversation(
     id: string,
     userId: string
   ): Promise<ConversationDto> {
-    const { data: result, error } = await db
-      .getClient()
-      .from("conversations")
-      .update({ is_deleted: true })
-      .eq("id", id)
-      .eq("user_id", userId)
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to delete conversation: ${error.message}`);
-    }
-
-    return result as ConversationDto;
+    const conversation = await prisma.conversation.update({
+      where: {
+        id,
+        userId,
+      },
+      data: {
+        isDeleted: true,
+      },
+    });
+    return conversation;
   }
 }
 

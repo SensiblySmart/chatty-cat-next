@@ -1318,11 +1318,11 @@ export const MessageUncheckedUpdateManyInputSchema: z.ZodType<Prisma.MessageUnch
 
 export const ConversationCreateInputSchema: z.ZodType<Prisma.ConversationCreateInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  lastMessageAt: z.coerce.date(),
+  lastMessageAt: z.coerce.date().optional(),
   title: z.string().optional().nullable(),
-  isDeleted: z.boolean(),
+  isDeleted: z.boolean().optional(),
   messages: z.lazy(() => MessageCreateNestedManyWithoutConversationInputSchema).optional(),
   user: z.lazy(() => UserCreateNestedOneWithoutConversationsInputSchema),
   agent: z.lazy(() => AgentCreateNestedOneWithoutConversationsInputSchema)
@@ -1330,13 +1330,13 @@ export const ConversationCreateInputSchema: z.ZodType<Prisma.ConversationCreateI
 
 export const ConversationUncheckedCreateInputSchema: z.ZodType<Prisma.ConversationUncheckedCreateInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  lastMessageAt: z.coerce.date(),
+  lastMessageAt: z.coerce.date().optional(),
   title: z.string().optional().nullable(),
   agentId: z.string(),
   userId: z.string(),
-  isDeleted: z.boolean(),
+  isDeleted: z.boolean().optional(),
   messages: z.lazy(() => MessageUncheckedCreateNestedManyWithoutConversationInputSchema).optional()
 }).strict();
 
@@ -1366,13 +1366,13 @@ export const ConversationUncheckedUpdateInputSchema: z.ZodType<Prisma.Conversati
 
 export const ConversationCreateManyInputSchema: z.ZodType<Prisma.ConversationCreateManyInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  lastMessageAt: z.coerce.date(),
+  lastMessageAt: z.coerce.date().optional(),
   title: z.string().optional().nullable(),
   agentId: z.string(),
   userId: z.string(),
-  isDeleted: z.boolean()
+  isDeleted: z.boolean().optional()
 }).strict();
 
 export const ConversationUpdateManyMutationInputSchema: z.ZodType<Prisma.ConversationUpdateManyMutationInput> = z.object({
@@ -2803,23 +2803,23 @@ export const SessionCreateManyUserInputEnvelopeSchema: z.ZodType<Prisma.SessionC
 
 export const ConversationCreateWithoutUserInputSchema: z.ZodType<Prisma.ConversationCreateWithoutUserInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  lastMessageAt: z.coerce.date(),
+  lastMessageAt: z.coerce.date().optional(),
   title: z.string().optional().nullable(),
-  isDeleted: z.boolean(),
+  isDeleted: z.boolean().optional(),
   messages: z.lazy(() => MessageCreateNestedManyWithoutConversationInputSchema).optional(),
   agent: z.lazy(() => AgentCreateNestedOneWithoutConversationsInputSchema)
 }).strict();
 
 export const ConversationUncheckedCreateWithoutUserInputSchema: z.ZodType<Prisma.ConversationUncheckedCreateWithoutUserInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  lastMessageAt: z.coerce.date(),
+  lastMessageAt: z.coerce.date().optional(),
   title: z.string().optional().nullable(),
   agentId: z.string(),
-  isDeleted: z.boolean(),
+  isDeleted: z.boolean().optional(),
   messages: z.lazy(() => MessageUncheckedCreateNestedManyWithoutConversationInputSchema).optional()
 }).strict();
 
@@ -2925,24 +2925,24 @@ export const ConversationScalarWhereInputSchema: z.ZodType<Prisma.ConversationSc
 
 export const ConversationCreateWithoutMessagesInputSchema: z.ZodType<Prisma.ConversationCreateWithoutMessagesInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  lastMessageAt: z.coerce.date(),
+  lastMessageAt: z.coerce.date().optional(),
   title: z.string().optional().nullable(),
-  isDeleted: z.boolean(),
+  isDeleted: z.boolean().optional(),
   user: z.lazy(() => UserCreateNestedOneWithoutConversationsInputSchema),
   agent: z.lazy(() => AgentCreateNestedOneWithoutConversationsInputSchema)
 }).strict();
 
 export const ConversationUncheckedCreateWithoutMessagesInputSchema: z.ZodType<Prisma.ConversationUncheckedCreateWithoutMessagesInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  lastMessageAt: z.coerce.date(),
+  lastMessageAt: z.coerce.date().optional(),
   title: z.string().optional().nullable(),
   agentId: z.string(),
   userId: z.string(),
-  isDeleted: z.boolean()
+  isDeleted: z.boolean().optional()
 }).strict();
 
 export const ConversationCreateOrConnectWithoutMessagesInputSchema: z.ZodType<Prisma.ConversationCreateOrConnectWithoutMessagesInput> = z.object({
@@ -3161,23 +3161,23 @@ export const AgentUncheckedUpdateWithoutConversationsInputSchema: z.ZodType<Pris
 
 export const ConversationCreateWithoutAgentInputSchema: z.ZodType<Prisma.ConversationCreateWithoutAgentInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  lastMessageAt: z.coerce.date(),
+  lastMessageAt: z.coerce.date().optional(),
   title: z.string().optional().nullable(),
-  isDeleted: z.boolean(),
+  isDeleted: z.boolean().optional(),
   messages: z.lazy(() => MessageCreateNestedManyWithoutConversationInputSchema).optional(),
   user: z.lazy(() => UserCreateNestedOneWithoutConversationsInputSchema)
 }).strict();
 
 export const ConversationUncheckedCreateWithoutAgentInputSchema: z.ZodType<Prisma.ConversationUncheckedCreateWithoutAgentInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  lastMessageAt: z.coerce.date(),
+  lastMessageAt: z.coerce.date().optional(),
   title: z.string().optional().nullable(),
   userId: z.string(),
-  isDeleted: z.boolean(),
+  isDeleted: z.boolean().optional(),
   messages: z.lazy(() => MessageUncheckedCreateNestedManyWithoutConversationInputSchema).optional()
 }).strict();
 
@@ -3339,12 +3339,12 @@ export const SessionCreateManyUserInputSchema: z.ZodType<Prisma.SessionCreateMan
 
 export const ConversationCreateManyUserInputSchema: z.ZodType<Prisma.ConversationCreateManyUserInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  lastMessageAt: z.coerce.date(),
+  lastMessageAt: z.coerce.date().optional(),
   title: z.string().optional().nullable(),
   agentId: z.string(),
-  isDeleted: z.boolean()
+  isDeleted: z.boolean().optional()
 }).strict();
 
 export const AccountUpdateWithoutUserInputSchema: z.ZodType<Prisma.AccountUpdateWithoutUserInput> = z.object({
@@ -3481,12 +3481,12 @@ export const MessageUncheckedUpdateManyWithoutConversationInputSchema: z.ZodType
 
 export const ConversationCreateManyAgentInputSchema: z.ZodType<Prisma.ConversationCreateManyAgentInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
-  lastMessageAt: z.coerce.date(),
+  lastMessageAt: z.coerce.date().optional(),
   title: z.string().optional().nullable(),
   userId: z.string(),
-  isDeleted: z.boolean()
+  isDeleted: z.boolean().optional()
 }).strict();
 
 export const ConversationUpdateWithoutAgentInputSchema: z.ZodType<Prisma.ConversationUpdateWithoutAgentInput> = z.object({

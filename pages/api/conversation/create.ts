@@ -1,6 +1,6 @@
 import type { NextApiResponse } from "next";
 import {
-  CreateConversationRequest,
+  CreateConversationRequestDto,
   CreateConversatioRequestSchema,
 } from "@/src/dto/conversation.dto";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
@@ -17,13 +17,13 @@ const handler = async function handler(
   req: ExtendedNextApiRequest,
   res: NextApiResponse
 ) {
-  const conversationData = req.validated as CreateConversationRequest;
+  const conversationData = req.validated as CreateConversationRequestDto;
   const userId = req.session.user.id;
 
   try {
     const conversation = await conversationService.createConversation({
       ...conversationData,
-      user_id: userId,
+      userId: userId,
     });
 
     return res.status(201).json({

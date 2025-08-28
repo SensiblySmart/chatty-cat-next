@@ -1,38 +1,26 @@
-// src/dto/conversation.dto.ts
 import { z } from "zod";
+import { ConversationSchema } from "@/prisma/generated/zod";
 
-// Dto Schema 与表结构完全一致
-export const ConversationEntitySchema = z.object({
-  id: z.string(),
-  created_at: z.string(),
-  updated_at: z.string(),
-  last_message_at: z.string(),
-  title: z.string(),
-  agent_id: z.string(),
-  user_id: z.string(),
-  is_deleted: z.boolean(),
+export const CreateConversationDtoSchema = ConversationSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+  lastMessageAt: true,
+  title: true,
+  isDeleted: true,
 });
 
-export const CreateConversationDtoSchema = ConversationEntitySchema.omit({
-  created_at: true,
-  updated_at: true,
-  last_message_at: true,
+export const CreateConversatioRequestSchema = ConversationSchema.omit({
+  createdAt: true,
+  updatedAt: true,
+  lastMessageAt: true,
   title: true,
-  is_deleted: true,
-});
-
-export const CreateConversatioRequestSchema = ConversationEntitySchema.omit({
-  created_at: true,
-  updated_at: true,
-  last_message_at: true,
-  title: true,
-  user_id: true,
-  is_deleted: true,
+  userId: true,
+  isDeleted: true,
 });
 
 // 自动推导 TypeScript 类型
-export type ConversationDto = z.infer<typeof ConversationEntitySchema>;
+export type ConversationDto = z.infer<typeof ConversationSchema>;
 export type CreateConversationDto = z.infer<typeof CreateConversationDtoSchema>;
-export type CreateConversationRequest = z.infer<
+export type CreateConversationRequestDto = z.infer<
   typeof CreateConversatioRequestSchema
 >;
