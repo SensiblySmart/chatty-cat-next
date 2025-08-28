@@ -7,6 +7,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
+generator zod {
+	provider = "zod-prisma-types"
+}
+
 /// Next Auth Schema Start
 model Account {
   id                String  @id @default(uuid())
@@ -115,7 +119,7 @@ model Agent {
   description      String      @map("description")
   avatarUrl        String      @map("avatar_url")
   modelId          String      @map("model_id")
-  system_prompt_id String      @map("system_prompt_id")
+  systemPromptId   String      @map("system_prompt_id")
 
   conversations Conversation[]
 

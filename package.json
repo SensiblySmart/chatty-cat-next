@@ -7,7 +7,8 @@
     "build": "dotenvx run -- next build",
     "start": "dotenvx run -- next start",
     "lint": "next lint",
-    "migrate": "dotenvx run -- npx prisma migrate dev"
+    "prisma:migrate": "dotenvx run -- npx prisma migrate dev",
+    "prisma:generate": "prisma generate"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.7",
@@ -29,7 +30,8 @@
     "prisma": "^6.15.0",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76",
+    "zod-prisma-types": "^3.2.4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",

@@ -1,5 +1,5 @@
 import type { NextApiResponse } from "next";
-import { UpdateAgentDtoSchema, UpdateAgentDto } from "@/src/dto/agent.dto";
+import { UpdateAgentRequestDtoSchema, UpdateAgentRequestDto } from "@/src/dto/agent.dto";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import {
   chain,
@@ -14,10 +14,12 @@ const handler = async function handler(
   req: ExtendedNextApiRequest,
   res: NextApiResponse
 ) {
-  const updateData = req.validated as UpdateAgentDto;
+  const updateData = req.validated as UpdateAgentRequestDto;
+
+  const { id, ...data } = updateData;
 
   try {
-    const agent = await agentService.updateAgent(updateData);
+    const agent = await agentService.updateAgent(id, data);
 
     return res.status(200).json({
       message: "Agent updated successfully",
@@ -37,5 +39,5 @@ const handler = async function handler(
 export default chain(
   withMethods(["PUT", "PATCH"]),
   withAuth(authOptions),
-  withZod(UpdateAgentDtoSchema, "body")
+  withZod(UpdateAgentRequestDtoSchema, "body")
 )(handler);

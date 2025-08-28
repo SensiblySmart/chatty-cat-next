@@ -1,5 +1,7 @@
 import { AgentDto, CreateAgentDto, UpdateAgentDto } from "@/src/dto/agent.dto";
 import db from "./db";
+import { prisma }from '@/prisma'
+import { Agent } from '@prisma/client'
 
 class AgentService {
   private static instance: AgentService;
@@ -16,89 +18,68 @@ class AgentService {
   /**
    * 创建新的 agent 记录
    */
-  async createAgent(data: CreateAgentDto): Promise<AgentDto> {
-    const { data: result, error } = await db
-      .getClient()
-      .from("agents")
-      .insert({
-        ...data,
-      })
-      .select()
-      .single();
+  async createAgent(data: CreateAgentDto): Promise<Agent> {
+    const agent = await prisma.agent.create({
+      data: {
+        displayName: data.displayName,
+        description: data.description,
+        avatarUrl: data.avatarUrl,
+        modelId: data.modelId,
+        systemPromptId: data.systemPromptId,
+      },
+    });
 
-    if (error) {
-      throw new Error(`Failed to create agent: ${error.message}`);
-    }
 
-    return result as AgentDto;
+    return agent;
   }
 
   /**
    * 获取所有 agent 记录
    */
-  async listAllAgents(): Promise<AgentDto[]> {
-    const { data: result, error } = await db
-      .getClient()
-      .from("agents")
-      .select("*")
-      .limit(100);
-
-    if (error) {
-      throw new Error(`Failed to list agents: ${error.message}`);
-    }
-
-    return result as AgentDto[];
+  async listAllAgents(): Promise<Agent[]> {
+    const agents = await prisma.agent.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return agents;
   }
 
   /**
    * 根据 ID 获取 agent
    */
-  async getAgentById(id: string): Promise<AgentDto | null> {
-    const { data: result, error } = await db
-      .getClient()
-      .from("agents")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error) {
-      if (error.code === "PGRST116") {
-        return null; // No rows returned
-      }
-      throw new Error(`Failed to get agent: ${error.message}`);
-    }
-
-    return result as AgentDto;
+  async getAgentById(id: string): Promise<Agent | null> {
+    const agent = await prisma.agent.findUnique({
+      where: {
+        id,
+      },
+    });
+    return agent;
   }
 
   /**
    * 更新 agent
    */
-  async updateAgent(data: UpdateAgentDto): Promise<AgentDto> {
-    const { id, ...updates } = data;
-    const { data: result, error } = await db
-      .getClient()
-      .from("agents")
-      .update(updates)
-      .eq("id", id)
-      .select()
-      .single();
+  async updateAgent(id: string, data: UpdateAgentDto): Promise<Agent> {
+    const agent = await prisma.agent.update({
+      where: {
+        id,
+      },
+      data: data,
+    });
 
-    if (error) {
-      throw new Error(`Failed to update agent: ${error.message}`);
-    }
-
-    return result as AgentDto;
+    return agent;
   }
 
   /**
    * 删除 agent
    */
   async deleteAgent(id: string): Promise<void> {
-    const { error } = await db.getClient().from("agents").delete().eq("id", id);
-    if (error) {
-      throw new Error(`Failed to delete agent: ${error.message}`);
-    }
+    await prisma.agent.delete({
+      where: {
+        id,
+      },
+    });
   }
 }
 
