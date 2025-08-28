@@ -7,6 +7,7 @@ generator client {
   provider = "prisma-client-js"
 }
 
+/// Next Auth Schema Start
 model Account {
   id                String  @id @default(uuid())
   userId            String  @map("user_id")
@@ -45,6 +46,7 @@ model User {
   image         String?
   accounts      Account[]
   sessions      Session[]
+  conversations Conversation[]
 
   @@map("users")
 }
@@ -56,4 +58,80 @@ model VerificationToken {
 
   @@unique([identifier, token])
   @@map("verification_tokens")
+}
+
+/// Next Auth Schema End
+
+/// Chatty Kitty Schema Start
+
+enum Role {
+  USER     @map("user")
+  ASISTANT @map("assistant")
+}
+
+enum MessageType {
+  TEXT // content would be text string
+  IMAGE  // content would be image url
+}
+
+model Message {
+  id             String      @id @default(uuid())
+  createdAt      DateTime    @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+  role           Role
+  content        String
+  messageType    MessageType @map("message_type")
+  senderId       String      @map("sender_id")
+  conversationId String      @map("conversation_id")
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model Conversation {
+  id             String      @id @default(uuid())
+  createdAt      DateTime    @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+  lastMessageAt  DateTime    @map("last_message_at")
+  title          String?
+  agentId        String      @map("agent_id")
+  userId         String      @map("user_id")
+  isDeleted      Boolean     @map("is_deleted")
+
+  messages Message[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  agent Agent @relation(fields: [agentId], references: [id], onDelete: Cascade)
+
+  @@map("conversations")
+}
+
+model Agent {
+  id               String      @id @default(uuid())
+  createdAt        DateTime    @default(now()) @map("created_at")
+  updatedAt        DateTime    @updatedAt @map("updated_at")
+  displayName      String      @map("display_name")
+  description      String      @map("description")
+  avatarUrl        String      @map("avatar_url")
+  modelId          String      @map("model_id")
+  system_prompt_id String      @map("system_prompt_id")
+
+  conversations Conversation[]
+
+  model Model @relation(fields: [modelId], references: [id], onDelete: Cascade)
+
+  @@map("agents")
+}
+
+model Model {
+  id             String      @id @default(uuid())
+  createdAt      DateTime    @default(now()) @map("created_at")
+  updatedAt      DateTime    @updatedAt @map("updated_at")
+  provider       String
+  modelName      String
+
+  agents Agent[]
+
+  @@map("models")
 }

@@ -6,7 +6,8 @@
     "dev": "dotenvx run -- next dev",
     "build": "dotenvx run -- next build",
     "start": "dotenvx run -- next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "migrate": "dotenvx run -- npx prisma migrate dev"
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.7",
