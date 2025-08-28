@@ -1,5 +1,4 @@
 import { AgentDto, CreateAgentDto, UpdateAgentDto } from "@/src/dto/agent.dto";
-import db from "./db";
 import { prisma }from '@/prisma'
 import { Agent } from '@prisma/client'
 

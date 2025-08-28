@@ -81,7 +81,7 @@ export default class MemoryManager {
     const langfuse = new Langfuse({});
     const prompt = await langfuse.getPrompt("CheckShouldQueryMemoryPrompt");
     const compiledPrompt = prompt.compile({
-      message: userMessage.content.text,
+      message: userMessage.content,
     });
 
     const result = await generateObject({
