@@ -1,5 +1,4 @@
 import { ModelDto, CreateModelDto } from "@/src/dto/model.dto";
-import db from "./db";
 import { prisma } from '@/prisma'
 
 class ModelService {

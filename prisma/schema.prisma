@@ -69,8 +69,8 @@ model VerificationToken {
 /// Chatty Kitty Schema Start
 
 enum Role {
-  USER     @map("user")
-  ASISTANT @map("assistant")
+  User
+  ASSISTANT
 }
 
 enum MessageType {

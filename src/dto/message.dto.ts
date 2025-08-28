@@ -1,43 +1,39 @@
-// src/dto/message.dto.ts
 import { z } from "zod";
+import { MessageSchema, RoleSchema } from "@/prisma/generated/zod";
 
-export const MessageRoleSchema = z.enum(["user", "assistant"]);
+export const MessageRoleSchema = RoleSchema;
 
 export const MessageContentSchema = z.object({
   text: z.string(),
 });
 
 // Dto Schema 与表结构完全一致
-export const MessageDtoSchema = z.object({
-  id: z.string(),
-  created_at: z.string(),
-  updated_at: z.string(),
-  conversation_id: z.string(),
-  sender_id: z.string(),
-  role: MessageRoleSchema,
-  content: MessageContentSchema,
-});
+export const MessageDtoSchema = MessageSchema
 
 export const CreateMessageDtoSchema = MessageDtoSchema.omit({
   id: true,
-  created_at: true,
-  updated_at: true,
+  createdAt: true,
+  updatedAt: true,
 });
 
 export const SendMessageRequestSchema = CreateMessageDtoSchema.omit({
-  sender_id: true,
+  senderId: true,
   role: true,
 });
 
 export const GetMessageChunkRequestSchema = z.object({
-  conversation_id: z.string(),
+  conversationId: z.string(),
   page: z.string().transform((val) => parseInt(val, 10)),
   limit: z.string().transform((val) => parseInt(val, 10)),
-  before_message_id: z.string().optional(), // 用于获取某条消息之前的消息
+  beforeMessageId: z.string().optional(), // 用于获取某条消息之前的消息
 });
 
 export type MessageDto = z.infer<typeof MessageDtoSchema>;
 export type CreateMessageDto = z.infer<typeof CreateMessageDtoSchema>;
+
+
+export type SendMessageRequestDto = z.infer<typeof SendMessageRequestSchema>;
+
 export type GetMessageChunkRequest = z.infer<
   typeof GetMessageChunkRequestSchema
 >;

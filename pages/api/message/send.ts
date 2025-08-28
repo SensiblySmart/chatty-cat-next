@@ -1,5 +1,5 @@
 import type { NextApiResponse } from "next";
-import { SendMessageRequestSchema } from "@/src/dto/message.dto";
+import { SendMessageRequestSchema,SendMessageRequestDto } from "@/src/dto/message.dto";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import {
   chain,
@@ -18,6 +18,7 @@ import { generateTitle } from "@/src/llm/helper";
 import { Message } from "mem0ai";
 import MemoryManager from "@/src/memory/MemoryManager";
 import Langfuse from "langfuse";
+import { MessageTypeSchema,  RoleSchema, RoleType } from "@/prisma/generated/zod";
 
 const langfuse = new Langfuse({});
 
@@ -25,13 +26,13 @@ const handler = async function handler(
   req: ExtendedNextApiRequest,
   res: NextApiResponse
 ) {
-  const messageData = req.validated as z.infer<typeof SendMessageRequestSchema>;
+  const messageData = req.validated as SendMessageRequestDto;
   const userId = req.session.user.id;
 
   try {
     // 1. check conversation is exist
     const conversation = await conversationService.getConversation(
-      messageData.conversation_id,
+      messageData.conversationId,
       userId
     );
 
@@ -42,18 +43,18 @@ const handler = async function handler(
     // 2. create user message
     const userMessage = await messageService.createMessage({
       ...messageData,
-      role: "user",
-      sender_id: userId,
+      role: RoleSchema.Enum.User,
+      senderId: userId,
     });
 
     // 3. get history messages for LLM context
     const historyMessages = await messageService.getMessagesByConversationId(
-      messageData.conversation_id
+      messageData.conversationId
     );
 
     const messages: Message[] = historyMessages.map((msg) => ({
-      role: msg.role,
-      content: msg.content.text,
+      role: msg.role.toLowerCase() as Lowercase<RoleType>,
+      content: msg.content,
     }));
     const memoryManager = new MemoryManager(userId);
     await memoryManager.processUserMessages(messages);
@@ -62,7 +63,7 @@ const handler = async function handler(
     if (!conversation.title) {
       const title = await generateTitle(messages);
       await conversationService.updateConversationTitle(
-        messageData.conversation_id,
+        messageData.conversationId,
         title,
         userId
       );
@@ -91,14 +92,15 @@ const handler = async function handler(
       if (fullAgentResponse.trim()) {
         try {
           await messageService.createMessage({
-            conversation_id: messageData.conversation_id,
-            sender_id: conversation.agent_id,
-            role: "assistant",
-            content: { text: fullAgentResponse },
+            conversationId: messageData.conversationId,
+            senderId: conversation.agentId,
+            role: RoleSchema.Enum.ASSISTANT,
+            content: fullAgentResponse,
+            messageType: MessageTypeSchema.Enum.TEXT,
           });
 
           await conversationService.updateLastMessageTime(
-            messageData.conversation_id,
+            messageData.conversationId,
             userId
           );
 
@@ -132,11 +134,11 @@ const handler = async function handler(
     req.on("aborted", cleanup);
 
     try {
-      const agent = await agentService.getAgentById(conversation.agent_id);
+      const agent = await agentService.getAgentById(conversation.agentId);
       if (!agent) {
         throw new Error("Agent not found");
       }
-      const model = await modelService.getModelById(agent.model_id);
+      const model = await modelService.getModelById(agent.modelId);
       if (!model) {
         throw new Error("Model not found");
       }
@@ -149,7 +151,7 @@ const handler = async function handler(
         userMessage
       );
 
-      const prompt = await langfuse.getPrompt(agent.langfuse_prompt_id);
+      const prompt = await langfuse.getPrompt(agent.systemPromptId);
       const compiledPrompt = prompt.compile({
         persistentMemory: persistentMemoryPromptPatch,
         onDemandMemory: memoryPromptPatch,
