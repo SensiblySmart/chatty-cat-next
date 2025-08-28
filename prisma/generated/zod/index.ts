@@ -1242,7 +1242,7 @@ export const VerificationTokenUncheckedUpdateManyInputSchema: z.ZodType<Prisma.V
 
 export const MessageCreateInputSchema: z.ZodType<Prisma.MessageCreateInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   role: z.lazy(() => RoleSchema),
   content: z.string(),
@@ -1253,7 +1253,7 @@ export const MessageCreateInputSchema: z.ZodType<Prisma.MessageCreateInput> = z.
 
 export const MessageUncheckedCreateInputSchema: z.ZodType<Prisma.MessageUncheckedCreateInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   role: z.lazy(() => RoleSchema),
   content: z.string(),
@@ -1286,7 +1286,7 @@ export const MessageUncheckedUpdateInputSchema: z.ZodType<Prisma.MessageUnchecke
 
 export const MessageCreateManyInputSchema: z.ZodType<Prisma.MessageCreateManyInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   role: z.lazy(() => RoleSchema),
   content: z.string(),
@@ -2985,7 +2985,7 @@ export const ConversationUncheckedUpdateWithoutMessagesInputSchema: z.ZodType<Pr
 
 export const MessageCreateWithoutConversationInputSchema: z.ZodType<Prisma.MessageCreateWithoutConversationInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   role: z.lazy(() => RoleSchema),
   content: z.string(),
@@ -2995,7 +2995,7 @@ export const MessageCreateWithoutConversationInputSchema: z.ZodType<Prisma.Messa
 
 export const MessageUncheckedCreateWithoutConversationInputSchema: z.ZodType<Prisma.MessageUncheckedCreateWithoutConversationInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   role: z.lazy(() => RoleSchema),
   content: z.string(),
@@ -3441,7 +3441,7 @@ export const ConversationUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Pr
 
 export const MessageCreateManyConversationInputSchema: z.ZodType<Prisma.MessageCreateManyConversationInput> = z.object({
   id: z.string().uuid().optional(),
-  createdAt: z.coerce.date(),
+  createdAt: z.coerce.date().optional(),
   updatedAt: z.coerce.date().optional(),
   role: z.lazy(() => RoleSchema),
   content: z.string(),

@@ -80,7 +80,7 @@ enum MessageType {
 
 model Message {
   id             String      @id @default(uuid())
-  createdAt      DateTime    @map("created_at")
+  createdAt      DateTime    @default(now()) @map("created_at")
   updatedAt      DateTime    @updatedAt @map("updated_at")
   role           Role
   content        String
