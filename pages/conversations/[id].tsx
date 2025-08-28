@@ -206,11 +206,11 @@ export default function ConversationDetailPage() {
               {conversation.title || "(未命名)"}
             </div>
             <div className="text-sm text-gray-600">
-              Agent: {conversation.agent_id}
+              Agent: {conversation.agentId}
             </div>
             <div className="text-sm text-gray-600">
               最后消息时间:{" "}
-              {new Date(conversation.last_message_at).toLocaleString()}
+              {new Date(conversation.lastMessageAt).toLocaleString()}
             </div>
           </div>
         ) : (
@@ -251,10 +251,10 @@ export default function ConversationDetailPage() {
               <div key={m.id} className="border rounded p-3">
                 <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
                   <span>角色: {m.role}</span>
-                  <span>{new Date(m.created_at).toLocaleString()}</span>
+                  <span>{new Date(m.createdAt).toLocaleString()}</span>
                 </div>
                 <div className="whitespace-pre-wrap text-sm">
-                  {m.content?.text || ""}
+                  {m.content || ""}
                 </div>
               </div>
             ))

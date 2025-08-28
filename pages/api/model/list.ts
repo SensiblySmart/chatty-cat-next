@@ -1,5 +1,4 @@
 import type { NextApiResponse } from "next";
-import { ModelDtoSchema } from "@/src/dto/model.dto";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import {
   chain,
