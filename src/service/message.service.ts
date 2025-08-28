@@ -18,7 +18,10 @@ class MessageService {
    */
   async createMessage(data: CreateMessageDto): Promise<MessageDto> {
     const result = await prisma.message.create({
-      data,
+      data: {
+        ...data,
+        createdAt: new Date(), // createdAt 不知道为什么设置了 @default(now()) 仍然会报错 required, 暂时手动传
+      }
     });
 
     return result;

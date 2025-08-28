@@ -43,7 +43,7 @@ const handler = async function handler(
     // 2. create user message
     const userMessage = await messageService.createMessage({
       ...messageData,
-      role: RoleSchema.Enum.User,
+      role: ,
       senderId: userId,
     });
 

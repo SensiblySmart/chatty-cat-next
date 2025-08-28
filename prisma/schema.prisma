@@ -69,7 +69,7 @@ model VerificationToken {
 /// Chatty Kitty Schema Start
 
 enum Role {
-  User
+  USER
   ASSISTANT
 }
 
@@ -80,7 +80,7 @@ enum MessageType {
 
 model Message {
   id             String      @id @default(uuid())
-  createdAt      DateTime    @default(now()) @map("created_at")
+  createdAt      DateTime    @map("created_at") @default(now())
   updatedAt      DateTime    @updatedAt @map("updated_at")
   role           Role
   content        String
