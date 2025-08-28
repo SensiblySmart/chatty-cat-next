@@ -2,6 +2,8 @@ import NextAuth, { NextAuthOptions } from "next-auth";
 import { SupabaseAdapter } from "@auth/supabase-adapter";
 import { env } from "@/utils/env";
 import GoogleProvider from "next-auth/providers/google";
+import { PrismaAdapter } from "@auth/prisma-adapter";
+import { prisma } from "@/prisma";
 
 declare module "next-auth" {
   interface Session {
@@ -43,10 +45,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   secret: env.NEXTAUTH_SECRET,
-  adapter: SupabaseAdapter({
-    url: env.SUPABASE_URL,
-    secret: env.SUPABASE_SERVICE_ROLE_KEY,
-  }),
+  adapter: PrismaAdapter(prisma),
   callbacks: {
     async session({ session, user }) {
       session.user.id = user.id;
