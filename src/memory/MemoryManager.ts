@@ -1,5 +1,5 @@
 import { detectMemoryTrigger, extractMemoryFact } from "@/src/llm/helper";
-import MemoryClient from "mem0ai";
+import MemoryClient, { Message } from "mem0ai";
 import { env } from "@/utils/env";
 import { MessageDto } from "@/src/dto/message.dto";
 import { Langfuse } from "langfuse";
@@ -16,40 +16,35 @@ export default class MemoryManager {
     this.userId = userId;
   }
 
-  public async processUserMessage(userMessage: MessageDto): Promise<void> {
-    const shouldRemember = await detectMemoryTrigger(userMessage.content.text);
-    console.log("[MemoryManager] Memory trigger detect Result", shouldRemember);
+  public async processUserMessages(messages: Message[]): Promise<void> {
+    // const shouldRemember = await detectMemoryTrigger(userMessage.content.text);
+    // console.log("[MemoryManager] Memory trigger detect Result", shouldRemember);
 
-    if (shouldRemember.should_remember) {
-      // 这里要先查一下，数据库里是不是已有相同的记忆，如果有，不要重复写
+    // if (shouldRemember.should_remember) {
+    //   // 这里要先查一下，数据库里是不是已有相同的记忆，如果有，不要重复写
 
-      console.log("[MemoryManager] Extracting memory fact");
-      const memoryFact = await extractMemoryFact(userMessage.content.text);
-      console.log("[MemoryManager] Memory fact extracted", memoryFact);
-      const memory = await this.mem0.add(
-        [
-          {
-            role: "user",
-            content: memoryFact.fact,
-          },
-        ],
-        {
-          user_id: this.userId,
-          version: "v2",
-          custom_categories: [
-            {
-              [memoryFact.category]: memoryFact.category,
-            },
-          ],
-          metadata: {
-            source_message_id: userMessage.id,
-            category: memoryFact.category,
-          },
-          infer: false,
-        }
-      );
-      console.log("[MemoryManager] Memory added", memory);
-    }
+    //   console.log("[MemoryManager] Extracting memory fact");
+    //   const memoryFact = await extractMemoryFact(userMessage.content.text);
+    //   console.log("[MemoryManager] Memory fact extracted", memoryFact);
+
+    // get last 10 messages
+    const last10Messages = messages.slice(
+      messages.length - 10,
+      messages.length
+    );
+
+    const memory = await this.mem0.add(
+      last10Messages.map((msg) => ({
+        role: msg.role,
+        content: msg.content,
+      })),
+      {
+        user_id: this.userId,
+        version: "v2",
+        infer: true,
+      }
+    );
+    console.log("[MemoryManager] Memory added", memory);
   }
 
   public async getPersistentMemoryPrompt(): Promise<string> {
@@ -104,6 +99,11 @@ export default class MemoryManager {
         result.object.query_question,
         {
           user_id: this.userId,
+          top_k: 3,
+          api_version: "v2",
+          filters: {
+            AND: [{ user_id: this.userId }],
+          },
         }
       );
 

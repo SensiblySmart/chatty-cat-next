@@ -19,6 +19,8 @@ import { Message } from "mem0ai";
 import MemoryManager from "@/src/memory/MemoryManager";
 import Langfuse from "langfuse";
 
+const langfuse = new Langfuse({});
+
 const handler = async function handler(
   req: ExtendedNextApiRequest,
   res: NextApiResponse
@@ -44,9 +46,6 @@ const handler = async function handler(
       sender_id: userId,
     });
 
-    const memoryManager = new MemoryManager(userId);
-    await memoryManager.processUserMessage(userMessage);
-
     // 3. get history messages for LLM context
     const historyMessages = await messageService.getMessagesByConversationId(
       messageData.conversation_id
@@ -56,6 +55,8 @@ const handler = async function handler(
       role: msg.role,
       content: msg.content.text,
     }));
+    const memoryManager = new MemoryManager(userId);
+    await memoryManager.processUserMessages(messages);
 
     // if title is not set, generate title
     if (!conversation.title) {
@@ -148,8 +149,7 @@ const handler = async function handler(
         userMessage
       );
 
-      const langfuse = new Langfuse({});
-      const prompt = await langfuse.getPrompt("kuromi");
+      const prompt = await langfuse.getPrompt(agent.langfuse_prompt_id);
       const compiledPrompt = prompt.compile({
         persistentMemory: persistentMemoryPromptPatch,
         onDemandMemory: memoryPromptPatch,

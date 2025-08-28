@@ -11,6 +11,7 @@ export const AgentDtoSchema = z.object({
   avatar_url: z.string(),
   model_id: z.string(),
   system_prompt: z.string(),
+  langfuse_prompt_id: z.string(),
 });
 
 export const CreateAgentDtoSchema = AgentDtoSchema.omit({
@@ -26,6 +27,7 @@ export const UpdateAgentDtoSchema = z.object({
   avatar_url: z.string().optional(),
   model_id: z.string().optional(),
   system_prompt: z.string().optional(),
+  langfuse_prompt_id: z.string().optional(),
 });
 
 export const DeleteAgentDtoSchema = z.object({
