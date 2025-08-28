@@ -1,5 +1,5 @@
 import type { NextApiResponse } from "next";
-import { ModelDto, CreateModelDtoSchema } from "@/src/dto/model.dto";
+import { CreateModelDto, CreateModelDtoSchema } from "@/src/dto/model.dto";
 import { authOptions } from "@/pages/api/auth/[...nextauth]";
 import {
   chain,
@@ -14,12 +14,12 @@ const handler = async function handler(
   req: ExtendedNextApiRequest,
   res: NextApiResponse
 ) {
-  const { provider, model_name } = req.validated as ModelDto;
+  const { provider, modelName } = req.validated as CreateModelDto;
 
   try {
     const model = await modelService.createModel({
       provider,
-      model_name,
+      modelName,
     });
 
     return res.status(201).json({

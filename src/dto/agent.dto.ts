@@ -2,9 +2,6 @@
 import { z } from "zod";
 import { AgentSchema } from '@/prisma/generated/zod'
 
-// Dto Schema 与表结构完全一致
-export const AgentDtoSchema = AgentSchema
-
 export const CreateAgentDtoSchema = AgentSchema.omit({
   id: true,
   createdAt: true,
@@ -26,7 +23,7 @@ export const DeleteAgentDtoSchema = z.object({
 });
 
 // 自动推导 TypeScript 类型
-export type AgentDto = z.infer<typeof AgentDtoSchema>;
+export type AgentDto = z.infer<typeof AgentSchema>;
 export type CreateAgentDto = z.infer<typeof CreateAgentDtoSchema>;
 export type DeleteAgentDto = z.infer<typeof DeleteAgentDtoSchema>;
 

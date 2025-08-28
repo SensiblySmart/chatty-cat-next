@@ -1,5 +1,6 @@
 import { ModelDto, CreateModelDto } from "@/src/dto/model.dto";
 import db from "./db";
+import { prisma } from '@/prisma'
 
 class ModelService {
   private static instance: ModelService;
@@ -13,67 +14,42 @@ class ModelService {
     return ModelService.instance;
   }
 
-  /**
-   * 创建新的 model 记录
-   */
   async createModel(data: CreateModelDto): Promise<ModelDto> {
-    const { data: result, error } = await db
-      .getClient()
-      .from("models")
-      .insert({
-        ...data,
-      })
-      .select()
-      .single();
+    const model = await prisma.model.create({
+      data,
+    });
 
-    if (error) {
-      throw new Error(`Failed to create model: ${error.message}`);
-    }
-
-    return result as ModelDto;
+    return model;
   }
 
-  /**
-   * 获取所有 model 记录
-   */
   async listAllModels(): Promise<ModelDto[]> {
-    const { data: result, error } = await db
-      .getClient()
-      .from("models")
-      .select("*")
-      .limit(100);
-
-    if (error) {
-      throw new Error(`Failed to list models: ${error.message}`);
-    }
-
-    return result as ModelDto[];
+    const models = await prisma.model.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return models;
   }
 
   /**
    * 根据 ID 删除 model 记录
    */
-  async deleteModel(id: string): Promise<void> {
-    const { error } = await db.getClient().from("models").delete().eq("id", id);
-
-    if (error) {
-      throw new Error(`Failed to delete model: ${error.message}`);
-    }
+  async deleteModel(id: string): Promise<ModelDto> {
+    const model = await prisma.model.delete({
+      where: {
+        id,
+      },
+    });
+    return model;
   }
 
-  async getModelById(id: string): Promise<ModelDto> {
-    const { data: result, error } = await db
-      .getClient()
-      .from("models")
-      .select("*")
-      .eq("id", id)
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to get model: ${error.message}`);
-    }
-
-    return result as ModelDto;
+  async getModelById(id: string): Promise<ModelDto | null> {
+    const model = await prisma.model.findUnique({
+      where: {
+        id,
+      },
+    });
+    return model;
   }
 }
 
