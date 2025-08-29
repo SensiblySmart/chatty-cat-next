@@ -148,8 +148,8 @@ model Memory {
   createdAt      DateTime    @default(now()) @map("created_at")
   updatedAt      DateTime    @updatedAt @map("updated_at")
   userId         String      @map("user_id")
-  embedding      Unsupported("vector(1536)")
-  content        String
+  embedding      Unsupported("vector(1536)") // embedding by text-embedding-3-small
+  content        String // content of the memory
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 

@@ -1,13 +1,13 @@
 import { generateText, embed, generateObject } from "ai";
 import { gpt4o } from "./provider";
 import { openai } from "@ai-sdk/openai";
-import { Message } from "mem0ai";
 import { z } from "zod";
 import { memoryClassifierAndSummarizerPrompt } from "@/src/prompt/memory";
 import { memoryTriggerDetectorPrompt } from "@/src/prompt/memoryTriggerDetectorPrompt";
-import { factExtractorPrompt } from "@/src/prompt/factExtractorPrompt";
+import { getFactExtractorPrompt } from "@/src/prompt/factExtractorPrompt";
+import { ModelMessage } from 'ai'
 
-export const generateTitle = async (messages: Message[]) => {
+export const generateTitle = async (messages: ModelMessage[]) => {
   const result = await generateText({
     model: gpt4o,
     system:
@@ -95,7 +95,7 @@ export const extractMemoryFact = async (content: string) => {
       ]),
       fact: z.string(),
     }),
-    system: factExtractorPrompt,
+    system: getFactExtractorPrompt([]),
     prompt: content,
   });
   return object;

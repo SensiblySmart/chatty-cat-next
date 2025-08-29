@@ -1,7 +1,5 @@
-import { streamText, ModelMessage, LanguageModel } from "ai";
+import { streamText, ModelMessage } from "ai";
 import { ModelDto } from "@/src/dto/model.dto";
-import { env } from "@/utils/env";
-import MemoryClient, { Memory, Message } from "mem0ai";
 import { getModelByModelName } from "./provider";
 
 class LLM {
@@ -11,19 +9,14 @@ class LLM {
     this.model = model;
   }
 
-  async streamText(messages: Message[], systemPrompt: string) {
+  async streamText(messages: ModelMessage[], systemPrompt: string) {
     const textStream = streamText({
       model: getModelByModelName(this.model.modelName),
-      messages: messages as ModelMessage[],
+      messages: messages,
       system: systemPrompt,
     });
 
     return textStream;
-  }
-
-  private async appendMemoryToSystemPrompt(system: string, memories: Memory[]) {
-    const memoryTexts = memories.map((m) => m.memory).join("\n");
-    return `${system}\n\n${memoryTexts}`;
   }
 }
 

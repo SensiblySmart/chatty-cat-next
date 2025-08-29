@@ -11,14 +11,13 @@ import {
 import { messageService } from "@/src/service/message.service";
 import { conversationService } from "@/src/service/conversation.service";
 import LLM from "@/src/llm/LLM";
-import { z } from "zod";
 import { modelService } from "@/src/service/model.service";
 import agentService from "@/src/service/agent.service";
 import { generateTitle } from "@/src/llm/helper";
-import { Message } from "mem0ai";
 import MemoryManager from "@/src/memory/MemoryManager";
 import Langfuse from "langfuse";
 import { MessageTypeSchema,  RoleSchema, RoleType } from "@/prisma/generated/zod";
+import { ModelMessage } from 'ai'
 
 const langfuse = new Langfuse({});
 
@@ -52,12 +51,14 @@ const handler = async function handler(
       messageData.conversationId
     );
 
-    const messages: Message[] = historyMessages.map((msg) => ({
+    const messages: ModelMessage[] = historyMessages.map((msg) => ({
       role: msg.role.toLowerCase() as Lowercase<RoleType>,
       content: msg.content,
     }));
+
+    // process memory
     const memoryManager = new MemoryManager(userId);
-    await memoryManager.processUserMessages(messages);
+    await memoryManager.processRecentMessages(messages);
 
     // if title is not set, generate title
     if (!conversation.title) {
