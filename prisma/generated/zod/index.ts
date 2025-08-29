@@ -28,6 +28,8 @@ export const AgentScalarFieldEnumSchema = z.enum(['id','createdAt','updatedAt','
 
 export const ModelScalarFieldEnumSchema = z.enum(['id','createdAt','updatedAt','provider','modelName']);
 
+export const MemoryScalarFieldEnumSchema = z.enum(['id','createdAt','updatedAt','userId']);
+
 export const SortOrderSchema = z.enum(['asc','desc']);
 
 export const QueryModeSchema = z.enum(['default','insensitive']);
@@ -175,6 +177,19 @@ export const ModelSchema = z.object({
 export type Model = z.infer<typeof ModelSchema>
 
 /////////////////////////////////////////
+// MEMORY SCHEMA
+/////////////////////////////////////////
+
+export const MemorySchema = z.object({
+  id: z.string().uuid(),
+  createdAt: z.coerce.date(),
+  updatedAt: z.coerce.date(),
+  userId: z.string(),
+})
+
+export type Memory = z.infer<typeof MemorySchema>
+
+/////////////////////////////////////////
 // SELECT & INCLUDE
 /////////////////////////////////////////
 
@@ -233,6 +248,7 @@ export const UserIncludeSchema: z.ZodType<Prisma.UserInclude> = z.object({
   accounts: z.union([z.boolean(),z.lazy(() => AccountFindManyArgsSchema)]).optional(),
   sessions: z.union([z.boolean(),z.lazy(() => SessionFindManyArgsSchema)]).optional(),
   conversations: z.union([z.boolean(),z.lazy(() => ConversationFindManyArgsSchema)]).optional(),
+  memories: z.union([z.boolean(),z.lazy(() => MemoryFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -249,6 +265,7 @@ export const UserCountOutputTypeSelectSchema: z.ZodType<Prisma.UserCountOutputTy
   accounts: z.boolean().optional(),
   sessions: z.boolean().optional(),
   conversations: z.boolean().optional(),
+  memories: z.boolean().optional(),
 }).strict();
 
 export const UserSelectSchema: z.ZodType<Prisma.UserSelect> = z.object({
@@ -260,6 +277,7 @@ export const UserSelectSchema: z.ZodType<Prisma.UserSelect> = z.object({
   accounts: z.union([z.boolean(),z.lazy(() => AccountFindManyArgsSchema)]).optional(),
   sessions: z.union([z.boolean(),z.lazy(() => SessionFindManyArgsSchema)]).optional(),
   conversations: z.union([z.boolean(),z.lazy(() => ConversationFindManyArgsSchema)]).optional(),
+  memories: z.union([z.boolean(),z.lazy(() => MemoryFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => UserCountOutputTypeArgsSchema)]).optional(),
 }).strict()
 
@@ -399,6 +417,26 @@ export const ModelSelectSchema: z.ZodType<Prisma.ModelSelect> = z.object({
   modelName: z.boolean().optional(),
   agents: z.union([z.boolean(),z.lazy(() => AgentFindManyArgsSchema)]).optional(),
   _count: z.union([z.boolean(),z.lazy(() => ModelCountOutputTypeArgsSchema)]).optional(),
+}).strict()
+
+// MEMORY
+//------------------------------------------------------
+
+export const MemoryIncludeSchema: z.ZodType<Prisma.MemoryInclude> = z.object({
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
+}).strict()
+
+export const MemoryArgsSchema: z.ZodType<Prisma.MemoryDefaultArgs> = z.object({
+  select: z.lazy(() => MemorySelectSchema).optional(),
+  include: z.lazy(() => MemoryIncludeSchema).optional(),
+}).strict();
+
+export const MemorySelectSchema: z.ZodType<Prisma.MemorySelect> = z.object({
+  id: z.boolean().optional(),
+  createdAt: z.boolean().optional(),
+  updatedAt: z.boolean().optional(),
+  userId: z.boolean().optional(),
+  user: z.union([z.boolean(),z.lazy(() => UserArgsSchema)]).optional(),
 }).strict()
 
 
@@ -584,7 +622,8 @@ export const UserWhereInputSchema: z.ZodType<Prisma.UserWhereInput> = z.object({
   image: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   accounts: z.lazy(() => AccountListRelationFilterSchema).optional(),
   sessions: z.lazy(() => SessionListRelationFilterSchema).optional(),
-  conversations: z.lazy(() => ConversationListRelationFilterSchema).optional()
+  conversations: z.lazy(() => ConversationListRelationFilterSchema).optional(),
+  memories: z.lazy(() => MemoryListRelationFilterSchema).optional()
 }).strict();
 
 export const UserOrderByWithRelationInputSchema: z.ZodType<Prisma.UserOrderByWithRelationInput> = z.object({
@@ -595,7 +634,8 @@ export const UserOrderByWithRelationInputSchema: z.ZodType<Prisma.UserOrderByWit
   image: z.union([ z.lazy(() => SortOrderSchema),z.lazy(() => SortOrderInputSchema) ]).optional(),
   accounts: z.lazy(() => AccountOrderByRelationAggregateInputSchema).optional(),
   sessions: z.lazy(() => SessionOrderByRelationAggregateInputSchema).optional(),
-  conversations: z.lazy(() => ConversationOrderByRelationAggregateInputSchema).optional()
+  conversations: z.lazy(() => ConversationOrderByRelationAggregateInputSchema).optional(),
+  memories: z.lazy(() => MemoryOrderByRelationAggregateInputSchema).optional()
 }).strict();
 
 export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> = z.union([
@@ -621,7 +661,8 @@ export const UserWhereUniqueInputSchema: z.ZodType<Prisma.UserWhereUniqueInput> 
   image: z.union([ z.lazy(() => StringNullableFilterSchema),z.string() ]).optional().nullable(),
   accounts: z.lazy(() => AccountListRelationFilterSchema).optional(),
   sessions: z.lazy(() => SessionListRelationFilterSchema).optional(),
-  conversations: z.lazy(() => ConversationListRelationFilterSchema).optional()
+  conversations: z.lazy(() => ConversationListRelationFilterSchema).optional(),
+  memories: z.lazy(() => MemoryListRelationFilterSchema).optional()
 }).strict());
 
 export const UserOrderByWithAggregationInputSchema: z.ZodType<Prisma.UserOrderByWithAggregationInput> = z.object({
@@ -978,6 +1019,59 @@ export const ModelScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.ModelSc
   modelName: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
 }).strict();
 
+export const MemoryWhereInputSchema: z.ZodType<Prisma.MemoryWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => MemoryWhereInputSchema),z.lazy(() => MemoryWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => MemoryWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => MemoryWhereInputSchema),z.lazy(() => MemoryWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  user: z.union([ z.lazy(() => UserScalarRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
+}).strict();
+
+export const MemoryOrderByWithRelationInputSchema: z.ZodType<Prisma.MemoryOrderByWithRelationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  updatedAt: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  user: z.lazy(() => UserOrderByWithRelationInputSchema).optional()
+}).strict();
+
+export const MemoryWhereUniqueInputSchema: z.ZodType<Prisma.MemoryWhereUniqueInput> = z.object({
+  id: z.string().uuid()
+})
+.and(z.object({
+  id: z.string().uuid().optional(),
+  AND: z.union([ z.lazy(() => MemoryWhereInputSchema),z.lazy(() => MemoryWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => MemoryWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => MemoryWhereInputSchema),z.lazy(() => MemoryWhereInputSchema).array() ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  user: z.union([ z.lazy(() => UserScalarRelationFilterSchema),z.lazy(() => UserWhereInputSchema) ]).optional(),
+}).strict());
+
+export const MemoryOrderByWithAggregationInputSchema: z.ZodType<Prisma.MemoryOrderByWithAggregationInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  updatedAt: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional(),
+  _count: z.lazy(() => MemoryCountOrderByAggregateInputSchema).optional(),
+  _max: z.lazy(() => MemoryMaxOrderByAggregateInputSchema).optional(),
+  _min: z.lazy(() => MemoryMinOrderByAggregateInputSchema).optional()
+}).strict();
+
+export const MemoryScalarWhereWithAggregatesInputSchema: z.ZodType<Prisma.MemoryScalarWhereWithAggregatesInput> = z.object({
+  AND: z.union([ z.lazy(() => MemoryScalarWhereWithAggregatesInputSchema),z.lazy(() => MemoryScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  OR: z.lazy(() => MemoryScalarWhereWithAggregatesInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => MemoryScalarWhereWithAggregatesInputSchema),z.lazy(() => MemoryScalarWhereWithAggregatesInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
+  updatedAt: z.union([ z.lazy(() => DateTimeWithAggregatesFilterSchema),z.coerce.date() ]).optional(),
+  userId: z.union([ z.lazy(() => StringWithAggregatesFilterSchema),z.string() ]).optional(),
+}).strict();
+
 export const AccountCreateInputSchema: z.ZodType<Prisma.AccountCreateInput> = z.object({
   id: z.string().uuid().optional(),
   type: z.string(),
@@ -1138,7 +1232,8 @@ export const UserCreateInputSchema: z.ZodType<Prisma.UserCreateInput> = z.object
   image: z.string().optional().nullable(),
   accounts: z.lazy(() => AccountCreateNestedManyWithoutUserInputSchema).optional(),
   sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
-  conversations: z.lazy(() => ConversationCreateNestedManyWithoutUserInputSchema).optional()
+  conversations: z.lazy(() => ConversationCreateNestedManyWithoutUserInputSchema).optional(),
+  memories: z.lazy(() => MemoryCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreateInput> = z.object({
@@ -1149,7 +1244,8 @@ export const UserUncheckedCreateInputSchema: z.ZodType<Prisma.UserUncheckedCreat
   image: z.string().optional().nullable(),
   accounts: z.lazy(() => AccountUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
   sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  conversations: z.lazy(() => ConversationUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  conversations: z.lazy(() => ConversationUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  memories: z.lazy(() => MemoryUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object({
@@ -1160,7 +1256,8 @@ export const UserUpdateInputSchema: z.ZodType<Prisma.UserUpdateInput> = z.object
   image: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   accounts: z.lazy(() => AccountUpdateManyWithoutUserNestedInputSchema).optional(),
   sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
-  conversations: z.lazy(() => ConversationUpdateManyWithoutUserNestedInputSchema).optional()
+  conversations: z.lazy(() => ConversationUpdateManyWithoutUserNestedInputSchema).optional(),
+  memories: z.lazy(() => MemoryUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdateInput> = z.object({
@@ -1171,7 +1268,8 @@ export const UserUncheckedUpdateInputSchema: z.ZodType<Prisma.UserUncheckedUpdat
   image: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   accounts: z.lazy(() => AccountUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
   sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  conversations: z.lazy(() => ConversationUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  conversations: z.lazy(() => ConversationUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  memories: z.lazy(() => MemoryUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserCreateManyInputSchema: z.ZodType<Prisma.UserCreateManyInput> = z.object({
@@ -1535,6 +1633,33 @@ export const ModelUncheckedUpdateManyInputSchema: z.ZodType<Prisma.ModelUnchecke
   modelName: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
+export const MemoryUpdateInputSchema: z.ZodType<Prisma.MemoryUpdateInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  user: z.lazy(() => UserUpdateOneRequiredWithoutMemoriesNestedInputSchema).optional()
+}).strict();
+
+export const MemoryUncheckedUpdateInputSchema: z.ZodType<Prisma.MemoryUncheckedUpdateInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const MemoryUpdateManyMutationInputSchema: z.ZodType<Prisma.MemoryUpdateManyMutationInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const MemoryUncheckedUpdateManyInputSchema: z.ZodType<Prisma.MemoryUncheckedUpdateManyInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  userId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
 export const StringFilterSchema: z.ZodType<Prisma.StringFilter> = z.object({
   equals: z.string().optional(),
   in: z.string().array().optional(),
@@ -1771,6 +1896,12 @@ export const ConversationListRelationFilterSchema: z.ZodType<Prisma.Conversation
   none: z.lazy(() => ConversationWhereInputSchema).optional()
 }).strict();
 
+export const MemoryListRelationFilterSchema: z.ZodType<Prisma.MemoryListRelationFilter> = z.object({
+  every: z.lazy(() => MemoryWhereInputSchema).optional(),
+  some: z.lazy(() => MemoryWhereInputSchema).optional(),
+  none: z.lazy(() => MemoryWhereInputSchema).optional()
+}).strict();
+
 export const AccountOrderByRelationAggregateInputSchema: z.ZodType<Prisma.AccountOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
@@ -1780,6 +1911,10 @@ export const SessionOrderByRelationAggregateInputSchema: z.ZodType<Prisma.Sessio
 }).strict();
 
 export const ConversationOrderByRelationAggregateInputSchema: z.ZodType<Prisma.ConversationOrderByRelationAggregateInput> = z.object({
+  _count: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const MemoryOrderByRelationAggregateInputSchema: z.ZodType<Prisma.MemoryOrderByRelationAggregateInput> = z.object({
   _count: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
@@ -2049,6 +2184,27 @@ export const ModelMinOrderByAggregateInputSchema: z.ZodType<Prisma.ModelMinOrder
   modelName: z.lazy(() => SortOrderSchema).optional()
 }).strict();
 
+export const MemoryCountOrderByAggregateInputSchema: z.ZodType<Prisma.MemoryCountOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  updatedAt: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const MemoryMaxOrderByAggregateInputSchema: z.ZodType<Prisma.MemoryMaxOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  updatedAt: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
+export const MemoryMinOrderByAggregateInputSchema: z.ZodType<Prisma.MemoryMinOrderByAggregateInput> = z.object({
+  id: z.lazy(() => SortOrderSchema).optional(),
+  createdAt: z.lazy(() => SortOrderSchema).optional(),
+  updatedAt: z.lazy(() => SortOrderSchema).optional(),
+  userId: z.lazy(() => SortOrderSchema).optional()
+}).strict();
+
 export const UserCreateNestedOneWithoutAccountsInputSchema: z.ZodType<Prisma.UserCreateNestedOneWithoutAccountsInput> = z.object({
   create: z.union([ z.lazy(() => UserCreateWithoutAccountsInputSchema),z.lazy(() => UserUncheckedCreateWithoutAccountsInputSchema) ]).optional(),
   connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutAccountsInputSchema).optional(),
@@ -2118,6 +2274,10 @@ export const ConversationCreateNestedManyWithoutUserInputSchema: z.ZodType<Prism
   connect: z.union([ z.lazy(() => ConversationWhereUniqueInputSchema),z.lazy(() => ConversationWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
+export const MemoryCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.MemoryCreateNestedManyWithoutUserInput> = z.object({
+  connect: z.union([ z.lazy(() => MemoryWhereUniqueInputSchema),z.lazy(() => MemoryWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
 export const AccountUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.AccountUncheckedCreateNestedManyWithoutUserInput> = z.object({
   create: z.union([ z.lazy(() => AccountCreateWithoutUserInputSchema),z.lazy(() => AccountCreateWithoutUserInputSchema).array(),z.lazy(() => AccountUncheckedCreateWithoutUserInputSchema),z.lazy(() => AccountUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => AccountCreateOrConnectWithoutUserInputSchema),z.lazy(() => AccountCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
@@ -2137,6 +2297,10 @@ export const ConversationUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodT
   connectOrCreate: z.union([ z.lazy(() => ConversationCreateOrConnectWithoutUserInputSchema),z.lazy(() => ConversationCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
   createMany: z.lazy(() => ConversationCreateManyUserInputEnvelopeSchema).optional(),
   connect: z.union([ z.lazy(() => ConversationWhereUniqueInputSchema),z.lazy(() => ConversationWhereUniqueInputSchema).array() ]).optional(),
+}).strict();
+
+export const MemoryUncheckedCreateNestedManyWithoutUserInputSchema: z.ZodType<Prisma.MemoryUncheckedCreateNestedManyWithoutUserInput> = z.object({
+  connect: z.union([ z.lazy(() => MemoryWhereUniqueInputSchema),z.lazy(() => MemoryWhereUniqueInputSchema).array() ]).optional(),
 }).strict();
 
 export const NullableDateTimeFieldUpdateOperationsInputSchema: z.ZodType<Prisma.NullableDateTimeFieldUpdateOperationsInput> = z.object({
@@ -2185,6 +2349,16 @@ export const ConversationUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prism
   deleteMany: z.union([ z.lazy(() => ConversationScalarWhereInputSchema),z.lazy(() => ConversationScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
+export const MemoryUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.MemoryUpdateManyWithoutUserNestedInput> = z.object({
+  set: z.union([ z.lazy(() => MemoryWhereUniqueInputSchema),z.lazy(() => MemoryWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => MemoryWhereUniqueInputSchema),z.lazy(() => MemoryWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => MemoryWhereUniqueInputSchema),z.lazy(() => MemoryWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => MemoryWhereUniqueInputSchema),z.lazy(() => MemoryWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => MemoryUpdateWithWhereUniqueWithoutUserInputSchema),z.lazy(() => MemoryUpdateWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => MemoryUpdateManyWithWhereWithoutUserInputSchema),z.lazy(() => MemoryUpdateManyWithWhereWithoutUserInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => MemoryScalarWhereInputSchema),z.lazy(() => MemoryScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
 export const AccountUncheckedUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput> = z.object({
   create: z.union([ z.lazy(() => AccountCreateWithoutUserInputSchema),z.lazy(() => AccountCreateWithoutUserInputSchema).array(),z.lazy(() => AccountUncheckedCreateWithoutUserInputSchema),z.lazy(() => AccountUncheckedCreateWithoutUserInputSchema).array() ]).optional(),
   connectOrCreate: z.union([ z.lazy(() => AccountCreateOrConnectWithoutUserInputSchema),z.lazy(() => AccountCreateOrConnectWithoutUserInputSchema).array() ]).optional(),
@@ -2225,6 +2399,16 @@ export const ConversationUncheckedUpdateManyWithoutUserNestedInputSchema: z.ZodT
   update: z.union([ z.lazy(() => ConversationUpdateWithWhereUniqueWithoutUserInputSchema),z.lazy(() => ConversationUpdateWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => ConversationUpdateManyWithWhereWithoutUserInputSchema),z.lazy(() => ConversationUpdateManyWithWhereWithoutUserInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => ConversationScalarWhereInputSchema),z.lazy(() => ConversationScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const MemoryUncheckedUpdateManyWithoutUserNestedInputSchema: z.ZodType<Prisma.MemoryUncheckedUpdateManyWithoutUserNestedInput> = z.object({
+  set: z.union([ z.lazy(() => MemoryWhereUniqueInputSchema),z.lazy(() => MemoryWhereUniqueInputSchema).array() ]).optional(),
+  disconnect: z.union([ z.lazy(() => MemoryWhereUniqueInputSchema),z.lazy(() => MemoryWhereUniqueInputSchema).array() ]).optional(),
+  delete: z.union([ z.lazy(() => MemoryWhereUniqueInputSchema),z.lazy(() => MemoryWhereUniqueInputSchema).array() ]).optional(),
+  connect: z.union([ z.lazy(() => MemoryWhereUniqueInputSchema),z.lazy(() => MemoryWhereUniqueInputSchema).array() ]).optional(),
+  update: z.union([ z.lazy(() => MemoryUpdateWithWhereUniqueWithoutUserInputSchema),z.lazy(() => MemoryUpdateWithWhereUniqueWithoutUserInputSchema).array() ]).optional(),
+  updateMany: z.union([ z.lazy(() => MemoryUpdateManyWithWhereWithoutUserInputSchema),z.lazy(() => MemoryUpdateManyWithWhereWithoutUserInputSchema).array() ]).optional(),
+  deleteMany: z.union([ z.lazy(() => MemoryScalarWhereInputSchema),z.lazy(() => MemoryScalarWhereInputSchema).array() ]).optional(),
 }).strict();
 
 export const ConversationCreateNestedOneWithoutMessagesInputSchema: z.ZodType<Prisma.ConversationCreateNestedOneWithoutMessagesInput> = z.object({
@@ -2419,6 +2603,14 @@ export const AgentUncheckedUpdateManyWithoutModelNestedInputSchema: z.ZodType<Pr
   update: z.union([ z.lazy(() => AgentUpdateWithWhereUniqueWithoutModelInputSchema),z.lazy(() => AgentUpdateWithWhereUniqueWithoutModelInputSchema).array() ]).optional(),
   updateMany: z.union([ z.lazy(() => AgentUpdateManyWithWhereWithoutModelInputSchema),z.lazy(() => AgentUpdateManyWithWhereWithoutModelInputSchema).array() ]).optional(),
   deleteMany: z.union([ z.lazy(() => AgentScalarWhereInputSchema),z.lazy(() => AgentScalarWhereInputSchema).array() ]).optional(),
+}).strict();
+
+export const UserUpdateOneRequiredWithoutMemoriesNestedInputSchema: z.ZodType<Prisma.UserUpdateOneRequiredWithoutMemoriesNestedInput> = z.object({
+  create: z.union([ z.lazy(() => UserCreateWithoutMemoriesInputSchema),z.lazy(() => UserUncheckedCreateWithoutMemoriesInputSchema) ]).optional(),
+  connectOrCreate: z.lazy(() => UserCreateOrConnectWithoutMemoriesInputSchema).optional(),
+  upsert: z.lazy(() => UserUpsertWithoutMemoriesInputSchema).optional(),
+  connect: z.lazy(() => UserWhereUniqueInputSchema).optional(),
+  update: z.union([ z.lazy(() => UserUpdateToOneWithWhereWithoutMemoriesInputSchema),z.lazy(() => UserUpdateWithoutMemoriesInputSchema),z.lazy(() => UserUncheckedUpdateWithoutMemoriesInputSchema) ]).optional(),
 }).strict();
 
 export const NestedStringFilterSchema: z.ZodType<Prisma.NestedStringFilter> = z.object({
@@ -2636,7 +2828,8 @@ export const UserCreateWithoutAccountsInputSchema: z.ZodType<Prisma.UserCreateWi
   emailVerified: z.coerce.date().optional().nullable(),
   image: z.string().optional().nullable(),
   sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
-  conversations: z.lazy(() => ConversationCreateNestedManyWithoutUserInputSchema).optional()
+  conversations: z.lazy(() => ConversationCreateNestedManyWithoutUserInputSchema).optional(),
+  memories: z.lazy(() => MemoryCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutAccountsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutAccountsInput> = z.object({
@@ -2646,7 +2839,8 @@ export const UserUncheckedCreateWithoutAccountsInputSchema: z.ZodType<Prisma.Use
   emailVerified: z.coerce.date().optional().nullable(),
   image: z.string().optional().nullable(),
   sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  conversations: z.lazy(() => ConversationUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  conversations: z.lazy(() => ConversationUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  memories: z.lazy(() => MemoryUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutAccountsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutAccountsInput> = z.object({
@@ -2672,7 +2866,8 @@ export const UserUpdateWithoutAccountsInputSchema: z.ZodType<Prisma.UserUpdateWi
   emailVerified: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   image: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
-  conversations: z.lazy(() => ConversationUpdateManyWithoutUserNestedInputSchema).optional()
+  conversations: z.lazy(() => ConversationUpdateManyWithoutUserNestedInputSchema).optional(),
+  memories: z.lazy(() => MemoryUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutAccountsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutAccountsInput> = z.object({
@@ -2682,7 +2877,8 @@ export const UserUncheckedUpdateWithoutAccountsInputSchema: z.ZodType<Prisma.Use
   emailVerified: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   image: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  conversations: z.lazy(() => ConversationUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  conversations: z.lazy(() => ConversationUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  memories: z.lazy(() => MemoryUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateWithoutSessionsInput> = z.object({
@@ -2692,7 +2888,8 @@ export const UserCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateWi
   emailVerified: z.coerce.date().optional().nullable(),
   image: z.string().optional().nullable(),
   accounts: z.lazy(() => AccountCreateNestedManyWithoutUserInputSchema).optional(),
-  conversations: z.lazy(() => ConversationCreateNestedManyWithoutUserInputSchema).optional()
+  conversations: z.lazy(() => ConversationCreateNestedManyWithoutUserInputSchema).optional(),
+  memories: z.lazy(() => MemoryCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutSessionsInput> = z.object({
@@ -2702,7 +2899,8 @@ export const UserUncheckedCreateWithoutSessionsInputSchema: z.ZodType<Prisma.Use
   emailVerified: z.coerce.date().optional().nullable(),
   image: z.string().optional().nullable(),
   accounts: z.lazy(() => AccountUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  conversations: z.lazy(() => ConversationUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  conversations: z.lazy(() => ConversationUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  memories: z.lazy(() => MemoryUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutSessionsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutSessionsInput> = z.object({
@@ -2728,7 +2926,8 @@ export const UserUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUpdateWi
   emailVerified: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   image: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   accounts: z.lazy(() => AccountUpdateManyWithoutUserNestedInputSchema).optional(),
-  conversations: z.lazy(() => ConversationUpdateManyWithoutUserNestedInputSchema).optional()
+  conversations: z.lazy(() => ConversationUpdateManyWithoutUserNestedInputSchema).optional(),
+  memories: z.lazy(() => MemoryUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutSessionsInput> = z.object({
@@ -2738,7 +2937,8 @@ export const UserUncheckedUpdateWithoutSessionsInputSchema: z.ZodType<Prisma.Use
   emailVerified: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   image: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   accounts: z.lazy(() => AccountUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  conversations: z.lazy(() => ConversationUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  conversations: z.lazy(() => ConversationUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  memories: z.lazy(() => MemoryUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const AccountCreateWithoutUserInputSchema: z.ZodType<Prisma.AccountCreateWithoutUserInput> = z.object({
@@ -2923,6 +3123,26 @@ export const ConversationScalarWhereInputSchema: z.ZodType<Prisma.ConversationSc
   isDeleted: z.union([ z.lazy(() => BoolFilterSchema),z.boolean() ]).optional(),
 }).strict();
 
+export const MemoryUpdateWithWhereUniqueWithoutUserInputSchema: z.ZodType<Prisma.MemoryUpdateWithWhereUniqueWithoutUserInput> = z.object({
+  where: z.lazy(() => MemoryWhereUniqueInputSchema),
+  data: z.union([ z.lazy(() => MemoryUpdateWithoutUserInputSchema),z.lazy(() => MemoryUncheckedUpdateWithoutUserInputSchema) ]),
+}).strict();
+
+export const MemoryUpdateManyWithWhereWithoutUserInputSchema: z.ZodType<Prisma.MemoryUpdateManyWithWhereWithoutUserInput> = z.object({
+  where: z.lazy(() => MemoryScalarWhereInputSchema),
+  data: z.union([ z.lazy(() => MemoryUpdateManyMutationInputSchema),z.lazy(() => MemoryUncheckedUpdateManyWithoutUserInputSchema) ]),
+}).strict();
+
+export const MemoryScalarWhereInputSchema: z.ZodType<Prisma.MemoryScalarWhereInput> = z.object({
+  AND: z.union([ z.lazy(() => MemoryScalarWhereInputSchema),z.lazy(() => MemoryScalarWhereInputSchema).array() ]).optional(),
+  OR: z.lazy(() => MemoryScalarWhereInputSchema).array().optional(),
+  NOT: z.union([ z.lazy(() => MemoryScalarWhereInputSchema),z.lazy(() => MemoryScalarWhereInputSchema).array() ]).optional(),
+  id: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+  createdAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  updatedAt: z.union([ z.lazy(() => DateTimeFilterSchema),z.coerce.date() ]).optional(),
+  userId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
+}).strict();
+
 export const ConversationCreateWithoutMessagesInputSchema: z.ZodType<Prisma.ConversationCreateWithoutMessagesInput> = z.object({
   id: z.string().uuid().optional(),
   createdAt: z.coerce.date().optional(),
@@ -3020,7 +3240,8 @@ export const UserCreateWithoutConversationsInputSchema: z.ZodType<Prisma.UserCre
   emailVerified: z.coerce.date().optional().nullable(),
   image: z.string().optional().nullable(),
   accounts: z.lazy(() => AccountCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
+  memories: z.lazy(() => MemoryCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserUncheckedCreateWithoutConversationsInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutConversationsInput> = z.object({
@@ -3030,7 +3251,8 @@ export const UserUncheckedCreateWithoutConversationsInputSchema: z.ZodType<Prism
   emailVerified: z.coerce.date().optional().nullable(),
   image: z.string().optional().nullable(),
   accounts: z.lazy(() => AccountUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  memories: z.lazy(() => MemoryUncheckedCreateNestedManyWithoutUserInputSchema).optional()
 }).strict();
 
 export const UserCreateOrConnectWithoutConversationsInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutConversationsInput> = z.object({
@@ -3113,7 +3335,8 @@ export const UserUpdateWithoutConversationsInputSchema: z.ZodType<Prisma.UserUpd
   emailVerified: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   image: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   accounts: z.lazy(() => AccountUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
+  memories: z.lazy(() => MemoryUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const UserUncheckedUpdateWithoutConversationsInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutConversationsInput> = z.object({
@@ -3123,7 +3346,8 @@ export const UserUncheckedUpdateWithoutConversationsInputSchema: z.ZodType<Prism
   emailVerified: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   image: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
   accounts: z.lazy(() => AccountUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
-  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  memories: z.lazy(() => MemoryUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
 }).strict();
 
 export const AgentUpsertWithoutConversationsInputSchema: z.ZodType<Prisma.AgentUpsertWithoutConversationsInput> = z.object({
@@ -3317,6 +3541,66 @@ export const AgentScalarWhereInputSchema: z.ZodType<Prisma.AgentScalarWhereInput
   systemPromptId: z.union([ z.lazy(() => StringFilterSchema),z.string() ]).optional(),
 }).strict();
 
+export const UserCreateWithoutMemoriesInputSchema: z.ZodType<Prisma.UserCreateWithoutMemoriesInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().optional().nullable(),
+  email: z.string().optional().nullable(),
+  emailVerified: z.coerce.date().optional().nullable(),
+  image: z.string().optional().nullable(),
+  accounts: z.lazy(() => AccountCreateNestedManyWithoutUserInputSchema).optional(),
+  sessions: z.lazy(() => SessionCreateNestedManyWithoutUserInputSchema).optional(),
+  conversations: z.lazy(() => ConversationCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserUncheckedCreateWithoutMemoriesInputSchema: z.ZodType<Prisma.UserUncheckedCreateWithoutMemoriesInput> = z.object({
+  id: z.string().uuid().optional(),
+  name: z.string().optional().nullable(),
+  email: z.string().optional().nullable(),
+  emailVerified: z.coerce.date().optional().nullable(),
+  image: z.string().optional().nullable(),
+  accounts: z.lazy(() => AccountUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  sessions: z.lazy(() => SessionUncheckedCreateNestedManyWithoutUserInputSchema).optional(),
+  conversations: z.lazy(() => ConversationUncheckedCreateNestedManyWithoutUserInputSchema).optional()
+}).strict();
+
+export const UserCreateOrConnectWithoutMemoriesInputSchema: z.ZodType<Prisma.UserCreateOrConnectWithoutMemoriesInput> = z.object({
+  where: z.lazy(() => UserWhereUniqueInputSchema),
+  create: z.union([ z.lazy(() => UserCreateWithoutMemoriesInputSchema),z.lazy(() => UserUncheckedCreateWithoutMemoriesInputSchema) ]),
+}).strict();
+
+export const UserUpsertWithoutMemoriesInputSchema: z.ZodType<Prisma.UserUpsertWithoutMemoriesInput> = z.object({
+  update: z.union([ z.lazy(() => UserUpdateWithoutMemoriesInputSchema),z.lazy(() => UserUncheckedUpdateWithoutMemoriesInputSchema) ]),
+  create: z.union([ z.lazy(() => UserCreateWithoutMemoriesInputSchema),z.lazy(() => UserUncheckedCreateWithoutMemoriesInputSchema) ]),
+  where: z.lazy(() => UserWhereInputSchema).optional()
+}).strict();
+
+export const UserUpdateToOneWithWhereWithoutMemoriesInputSchema: z.ZodType<Prisma.UserUpdateToOneWithWhereWithoutMemoriesInput> = z.object({
+  where: z.lazy(() => UserWhereInputSchema).optional(),
+  data: z.union([ z.lazy(() => UserUpdateWithoutMemoriesInputSchema),z.lazy(() => UserUncheckedUpdateWithoutMemoriesInputSchema) ]),
+}).strict();
+
+export const UserUpdateWithoutMemoriesInputSchema: z.ZodType<Prisma.UserUpdateWithoutMemoriesInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  emailVerified: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  image: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  accounts: z.lazy(() => AccountUpdateManyWithoutUserNestedInputSchema).optional(),
+  sessions: z.lazy(() => SessionUpdateManyWithoutUserNestedInputSchema).optional(),
+  conversations: z.lazy(() => ConversationUpdateManyWithoutUserNestedInputSchema).optional()
+}).strict();
+
+export const UserUncheckedUpdateWithoutMemoriesInputSchema: z.ZodType<Prisma.UserUncheckedUpdateWithoutMemoriesInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  name: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  email: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  emailVerified: z.union([ z.coerce.date(),z.lazy(() => NullableDateTimeFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  image: z.union([ z.string(),z.lazy(() => NullableStringFieldUpdateOperationsInputSchema) ]).optional().nullable(),
+  accounts: z.lazy(() => AccountUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  sessions: z.lazy(() => SessionUncheckedUpdateManyWithoutUserNestedInputSchema).optional(),
+  conversations: z.lazy(() => ConversationUncheckedUpdateManyWithoutUserNestedInputSchema).optional()
+}).strict();
+
 export const AccountCreateManyUserInputSchema: z.ZodType<Prisma.AccountCreateManyUserInput> = z.object({
   id: z.string().uuid().optional(),
   type: z.string(),
@@ -3437,6 +3721,24 @@ export const ConversationUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Pr
   title: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   agentId: z.union([ z.string(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
   isDeleted: z.union([ z.boolean(),z.lazy(() => BoolFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const MemoryUpdateWithoutUserInputSchema: z.ZodType<Prisma.MemoryUpdateWithoutUserInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const MemoryUncheckedUpdateWithoutUserInputSchema: z.ZodType<Prisma.MemoryUncheckedUpdateWithoutUserInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+}).strict();
+
+export const MemoryUncheckedUpdateManyWithoutUserInputSchema: z.ZodType<Prisma.MemoryUncheckedUpdateManyWithoutUserInput> = z.object({
+  id: z.union([ z.string().uuid(),z.lazy(() => StringFieldUpdateOperationsInputSchema) ]).optional(),
+  createdAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
+  updatedAt: z.union([ z.coerce.date(),z.lazy(() => DateTimeFieldUpdateOperationsInputSchema) ]).optional(),
 }).strict();
 
 export const MessageCreateManyConversationInputSchema: z.ZodType<Prisma.MessageCreateManyConversationInput> = z.object({
@@ -4058,6 +4360,68 @@ export const ModelFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.ModelFindUniqueO
   where: ModelWhereUniqueInputSchema,
 }).strict() ;
 
+export const MemoryFindFirstArgsSchema: z.ZodType<Prisma.MemoryFindFirstArgs> = z.object({
+  select: MemorySelectSchema.optional(),
+  include: MemoryIncludeSchema.optional(),
+  where: MemoryWhereInputSchema.optional(),
+  orderBy: z.union([ MemoryOrderByWithRelationInputSchema.array(),MemoryOrderByWithRelationInputSchema ]).optional(),
+  cursor: MemoryWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ MemoryScalarFieldEnumSchema,MemoryScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const MemoryFindFirstOrThrowArgsSchema: z.ZodType<Prisma.MemoryFindFirstOrThrowArgs> = z.object({
+  select: MemorySelectSchema.optional(),
+  include: MemoryIncludeSchema.optional(),
+  where: MemoryWhereInputSchema.optional(),
+  orderBy: z.union([ MemoryOrderByWithRelationInputSchema.array(),MemoryOrderByWithRelationInputSchema ]).optional(),
+  cursor: MemoryWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ MemoryScalarFieldEnumSchema,MemoryScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const MemoryFindManyArgsSchema: z.ZodType<Prisma.MemoryFindManyArgs> = z.object({
+  select: MemorySelectSchema.optional(),
+  include: MemoryIncludeSchema.optional(),
+  where: MemoryWhereInputSchema.optional(),
+  orderBy: z.union([ MemoryOrderByWithRelationInputSchema.array(),MemoryOrderByWithRelationInputSchema ]).optional(),
+  cursor: MemoryWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+  distinct: z.union([ MemoryScalarFieldEnumSchema,MemoryScalarFieldEnumSchema.array() ]).optional(),
+}).strict() ;
+
+export const MemoryAggregateArgsSchema: z.ZodType<Prisma.MemoryAggregateArgs> = z.object({
+  where: MemoryWhereInputSchema.optional(),
+  orderBy: z.union([ MemoryOrderByWithRelationInputSchema.array(),MemoryOrderByWithRelationInputSchema ]).optional(),
+  cursor: MemoryWhereUniqueInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const MemoryGroupByArgsSchema: z.ZodType<Prisma.MemoryGroupByArgs> = z.object({
+  where: MemoryWhereInputSchema.optional(),
+  orderBy: z.union([ MemoryOrderByWithAggregationInputSchema.array(),MemoryOrderByWithAggregationInputSchema ]).optional(),
+  by: MemoryScalarFieldEnumSchema.array(),
+  having: MemoryScalarWhereWithAggregatesInputSchema.optional(),
+  take: z.number().optional(),
+  skip: z.number().optional(),
+}).strict() ;
+
+export const MemoryFindUniqueArgsSchema: z.ZodType<Prisma.MemoryFindUniqueArgs> = z.object({
+  select: MemorySelectSchema.optional(),
+  include: MemoryIncludeSchema.optional(),
+  where: MemoryWhereUniqueInputSchema,
+}).strict() ;
+
+export const MemoryFindUniqueOrThrowArgsSchema: z.ZodType<Prisma.MemoryFindUniqueOrThrowArgs> = z.object({
+  select: MemorySelectSchema.optional(),
+  include: MemoryIncludeSchema.optional(),
+  where: MemoryWhereUniqueInputSchema,
+}).strict() ;
+
 export const AccountCreateArgsSchema: z.ZodType<Prisma.AccountCreateArgs> = z.object({
   select: AccountSelectSchema.optional(),
   include: AccountIncludeSchema.optional(),
@@ -4483,5 +4847,35 @@ export const ModelUpdateManyAndReturnArgsSchema: z.ZodType<Prisma.ModelUpdateMan
 
 export const ModelDeleteManyArgsSchema: z.ZodType<Prisma.ModelDeleteManyArgs> = z.object({
   where: ModelWhereInputSchema.optional(),
+  limit: z.number().optional(),
+}).strict() ;
+
+export const MemoryDeleteArgsSchema: z.ZodType<Prisma.MemoryDeleteArgs> = z.object({
+  select: MemorySelectSchema.optional(),
+  include: MemoryIncludeSchema.optional(),
+  where: MemoryWhereUniqueInputSchema,
+}).strict() ;
+
+export const MemoryUpdateArgsSchema: z.ZodType<Prisma.MemoryUpdateArgs> = z.object({
+  select: MemorySelectSchema.optional(),
+  include: MemoryIncludeSchema.optional(),
+  data: z.union([ MemoryUpdateInputSchema,MemoryUncheckedUpdateInputSchema ]),
+  where: MemoryWhereUniqueInputSchema,
+}).strict() ;
+
+export const MemoryUpdateManyArgsSchema: z.ZodType<Prisma.MemoryUpdateManyArgs> = z.object({
+  data: z.union([ MemoryUpdateManyMutationInputSchema,MemoryUncheckedUpdateManyInputSchema ]),
+  where: MemoryWhereInputSchema.optional(),
+  limit: z.number().optional(),
+}).strict() ;
+
+export const MemoryUpdateManyAndReturnArgsSchema: z.ZodType<Prisma.MemoryUpdateManyAndReturnArgs> = z.object({
+  data: z.union([ MemoryUpdateManyMutationInputSchema,MemoryUncheckedUpdateManyInputSchema ]),
+  where: MemoryWhereInputSchema.optional(),
+  limit: z.number().optional(),
+}).strict() ;
+
+export const MemoryDeleteManyArgsSchema: z.ZodType<Prisma.MemoryDeleteManyArgs> = z.object({
+  where: MemoryWhereInputSchema.optional(),
   limit: z.number().optional(),
 }).strict() ;
