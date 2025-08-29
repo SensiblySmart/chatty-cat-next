@@ -22,12 +22,21 @@ export const DeleteMemoryDtoSchema = z.object({
   id: z.string(),
 });
 
+
+// Request DTOs
+
 export const CreateMemoryRequestSchema = CreateMemoryDtoSchema.omit({
   userId: true,
   embedding: true,
 })
 
+export const SearchMemoryRequestSchema = z.object({
+  content: z.string(),
+  limit: z.number().optional(),
+});
+
 export type CreateMemoryRequestDto = z.infer<typeof CreateMemoryRequestSchema>;
+export type SearchMemoryRequestDto = z.infer<typeof SearchMemoryRequestSchema>;
 
 export type MemoryDto = z.infer<typeof MemorySchemaWithEmbedding>;
 export type CreateMemoryDto = z.infer<typeof CreateMemoryDtoSchema>;
