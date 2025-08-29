@@ -149,6 +149,7 @@ model Memory {
   updatedAt      DateTime    @updatedAt @map("updated_at")
   userId         String      @map("user_id")
   embedding      Unsupported("vector(1536)")
+  content        String
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
